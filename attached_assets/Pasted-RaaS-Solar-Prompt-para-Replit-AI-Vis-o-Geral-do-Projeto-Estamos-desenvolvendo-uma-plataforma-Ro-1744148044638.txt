@@ -1,0 +1,80 @@
+RaaS Solar - Prompt para Replit AI
+Visão Geral do Projeto
+Estamos desenvolvendo uma plataforma "Roof as a Service" (RaaS) para energia solar que conecta consumidores que desejam economizar na conta de luz usando energia limpa e proprietários de usinas solares que podem alugar seu excedente. Nossa aplicação está sendo construída com Next.js 14+ (App Router), TypeScript, PostgreSQL (via Neon.tech), Tailwind CSS e componentes Shadcn/UI.
+Arquitetura e Tecnologias
+Frontend: Next.js 14+ com App Router
+Backend: API Routes do Next.js
+Banco de Dados: PostgreSQL via Neon.tech com Prisma ORM
+Autenticação: JWT com middleware personalizado
+Estilização: Tailwind CSS + Shadcn/UI
+Formulários: React Hook Form + Zod
+Estado Global: Zustand
+Envio de Emails: Resend
+Regras de Negócio Essenciais
+Modelo RaaS
+Consumidores pagam a RaaS e recebem créditos de energia solar gerados por usinas parceiras, obtendo desconto na conta de luz sem precisar instalar painéis solares. Proprietários de usinas alugam sua capacidade de geração.
+Papéis de Usuário (RBAC)
+super_admin: Controle total (apenas pedro-eli@hotmail.com inicialmente)
+admin: Gerencia usuários, convites, instalações, distribuidoras, preços e faturas
+admin_staff: Funções administrativas básicas e suporte
+customer: Consumidor final que recebe desconto
+energy_renter: Proprietário da usina solar
+user: Usuário básico (potencialmente antes de definir papel específico)
+Sistema de Convites
+O registro de usuários (exceto o super_admin inicial) só ocorre através de link de convite enviado por super_admin ou admin. Cada convite especifica o papel do novo usuário.
+Lógica de Créditos de Energia
+Geração: Energia produzida pela usina geradora
+Transferência: Energia que a usina envia para unidades consumidoras
+Recebimento: Energia que a unidade consumidora efetivamente recebe
+Consumo: Energia total utilizada no mês
+Compensação: Parcela da energia recebida usada para abater o consumo
+Saldo/Créditos: Energia recebida e não compensada vira crédito
+Expiração: Créditos expiram após 5 anos
+Quota: Percentual da energia gerada destinada a uma unidade consumidora
+Instalações e Distribuidoras
+Instalação: Representa um medidor de energia, identificado por número único
+Distribuidora: Empresa de energia (ex: CEMIG) com preços do kWh específicos
+Backend Implementado
+Já implementamos:
+Autenticação completa com JWT e RBAC via middleware
+Sistema de convites por email
+API de distribuidoras
+Configuração do banco de dados com Prisma
+Estrutura de logs com Pino logger
+Tema claro/escuro com ThemeSwitcher
+Interfaces Necessárias
+Precisamos de interfaces para:
+Autenticação: Login e registro via convite
+Dashboard Admin: Visualização de métricas, usuários, instalações
+Gerenciamento de Distribuidoras: CRUD de distribuidoras e preços
+Gerenciamento de Instalações: CRUD de instalações (geradoras/consumidoras)
+Visualização de Créditos: Para consumidores verem seus créditos e economia
+Upload de Dados: Para admin fazer upload de planilhas de consumo/geração
+Gestão de Convites: Interface para envio e acompanhamento de convites
+Faturas: Visualização e segunda-via de faturas/boletos
+Tema e Design
+Paleta de Cores:
+Modo Claro: Fundo branco, primária verde piscina (#A0E6CB), acentos azul-esverdeado, texto cinza escuro
+Modo Escuro: Fundo azul escuro (#0a192f), primária/acentos tons de Emerald/Teal (#14b8a6, #2dd4bf), texto claro
+Estilo: Interface limpa, moderna, minimalista e intuitiva
+Componentes: Uso extensivo de Shadcn/UI para consistência
+Responsividade: Mobile-first com breakpoints adequados
+Idioma: Português do Brasil (pt-BR)
+Integração Backend/Frontend
+O backend já tem endpoints para:
+Autenticação (login/registro)
+Convites
+Distribuidoras
+Novos endpoints serão criados para:
+Instalações
+Alocação de energia
+Upload e processamento de dados
+Faturas
+Dashboard/métricas
+Pontos de Atenção
+Todas as rotas privadas devem verificar autenticação/autorização
+O sistema de convites é crucial para o processo de registro
+Os cálculos de créditos de energia seguem uma lógica específica
+O sistema tem diferentes visões baseadas no papel do usuário
+O upload de arquivos (Excel/TSV) precisa processar e associar dados aos clientes
+Sua tarefa é criar um frontend moderno, responsivo e intuitivo que se integre com nosso backend, seguindo as regras de negócio e design especificados, com foco especial na qualidade da experiência do usuário.
