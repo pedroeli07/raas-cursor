@@ -1,0 +1,24 @@
+[2025-04-14T17:58:16.742Z] Iniciando teste manual da página de geração de boletos
+[2025-04-14T17:58:19.386Z] Navegador aberto com sucesso
+[2025-04-14T17:58:19.387Z] Navegando para página de geração de boletos
+[2025-04-14T17:58:32.606Z] ERRO: page.waitForTimeout is not a function
+[2025-04-14T17:58:34.812Z] Browser Console: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2025-04-14T17:58:39.133Z] Navegador fechado
+[2025-04-14T17:59:03.709Z] Iniciando teste manual da página de geração de boletos
+[2025-04-14T17:59:05.583Z] Navegador aberto com sucesso
+[2025-04-14T17:59:05.584Z] Navegando para página de geração de boletos
+[2025-04-14T17:59:06.744Z] Browser Console: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2025-04-14T17:59:07.148Z] Browser Console: %c[INFO] %c[FRONTEND] color: green color: purple; font-weight: bold Login page rendered JSHandle@object
+[2025-04-14T17:59:07.151Z] Browser Console: %c[INFO] %c[FRONTEND] color: green color: purple; font-weight: bold Login page rendered JSHandle@object
+[2025-04-14T17:59:07.228Z] Browser Console: %c[Console Filter] %cActive - Filtering unwanted messages color: purple; font-weight: bold color: gray
+[2025-04-14T17:59:11.026Z] Tirando screenshot da página de boletos
+[2025-04-14T17:59:12.050Z] Screenshot capturado! Agora você pode interagir manualmente com a página.
+[2025-04-14T17:59:12.054Z] O navegador permanecerá aberto por 2 minutos para testes manuais.
+[2025-04-14T17:59:12.061Z] Você pode arrastar e redimensionar o componente React-Rnd para testar.
+[2025-04-14T18:01:20.150Z] Iniciando teste manual da página de geração de boletos
+[2025-04-14T18:01:24.263Z] Navegador aberto com sucesso
+[2025-04-14T18:01:24.265Z] Navegando para página de geração de boletos
+[2025-04-14T18:01:27.017Z] ERRO: net::ERR_CONNECTION_REFUSED at http://localhost:3000/admin/gerar-boleto
+[2025-04-14T18:01:50.114Z] Iniciando teste manual da página de geração de boletos
+[2025-04-14T18:01:52.312Z] Navegador aberto com sucesso
+[2025-04-14T18:01:52.313Z] Navegando para página de geração de boletos

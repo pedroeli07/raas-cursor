@@ -70,6 +70,12 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        // Clear auth cookies
+        document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict';
+        
+        // Clear local storage (in addition to the persist middleware)
+        localStorage.removeItem('auth_token');
+        
         set({
           user: null,
           token: null,

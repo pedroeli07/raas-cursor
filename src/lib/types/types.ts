@@ -9,6 +9,7 @@ export interface RequestUser {
   userId: string | null;
   userEmail: string | null;
   userRole: Role | null;
+
 }
 
 // User data returned from login/registration
@@ -34,6 +35,8 @@ export interface InvitationResponse {
   name?: string;
   role: Role;
   status: InvitationStatus;
+  message?: string;
+  sender?: string;
   createdAt: Date;
   expiresAt: Date;
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
-import { helpResponseSchema } from '@/lib/schemas/schemas';
+import { createHelpResponseSchema } from '../../../../../lib/schemas/schemas';
 import { getUserFromRequest, isAdmin } from '@/lib/utils/utils';
 import { validateRequestBody, validateAuthentication, createErrorResponse } from '@/lib/validators/validators';
 
@@ -27,7 +27,7 @@ export async function POST(
     // Validate request data
     const validation = await validateRequestBody(
       req, 
-      helpResponseSchema,
+      createHelpResponseSchema,
       'Help response validation'
     );
     

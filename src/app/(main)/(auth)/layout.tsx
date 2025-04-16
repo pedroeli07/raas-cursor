@@ -1,6 +1,12 @@
 // Path: src/app/(main)/(auth)/layout.tsx
-import React, { ReactNode } from 'react';
+'use client';
+
+import React, { ReactNode, useEffect } from 'react';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { Button } from '@/components/ui/button';
+import { MoonIcon, SunIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 // import Image from 'next/image'; // Importar quando for usar uma logo
 
 interface AuthLayoutProps {
@@ -8,38 +14,18 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
+  const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
+
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-white shadow-sm py-4 px-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="text-xl font-semibold text-indigo-600">
-            RaaS Solar
-            {/* Opcional: Adicionar logo quando disponível */}
-            <Image 
-              src="/logo.png" 
-              alt="RaaS Solar" 
-              width={120} 
-              height={40} 
-              priority 
-            /> 
-          </div>
-        </div>
-      </header>
-
-      {/* Conteúdo principal */}
-      <main className="flex-grow flex items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-indigo-950 md:flex-row">
+        {/* Conteúdo principal */}
+        <main className="flex flex-grow flex-col items-center justify-center px-4 py-0">
           {children}
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white py-4 px-6 border-t">
-        <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} RaaS Solar. Todos os direitos reservados.
-        </div>
-      </footer>
+        </main>
     </div>
   );
 }

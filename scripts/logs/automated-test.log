@@ -1,0 +1,35 @@
+[INFO] [2025-04-12T13:53:44.440Z] Running in headed mode
+[DEBUG] [2025-04-12T13:53:45.231Z] Browser console info: => browserContext.newPage started
+[DEBUG] [2025-04-12T13:53:45.716Z] Browser console info: <= browserContext.newPage succeeded
+
+[STEP 1] [2025-04-12T13:53:45.719Z] Checking if registration is needed
+[DEBUG] [2025-04-12T13:53:45.864Z] Browser console info: => page.goto started
+[DEBUG] [2025-04-12T13:53:48.365Z] Browser console info: <= page.goto failed
+[ERROR] [2025-04-12T13:53:48.366Z] Error during login/registration: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login
+Call log:
+[2m  - navigating to "http://localhost:3000/login", waiting until "load"[22m
+
+page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login
+Call log:
+[2m  - navigating to "http://localhost:3000/login", waiting until "load"[22m
+
+    at registerAccount (C:\raas-cursor\scripts\automated-raas-test.js:122:16)
+    at runTests (C:\raas-cursor\scripts\automated-raas-test.js:791:40)
+[DEBUG] [2025-04-12T13:53:48.374Z] Browser console info: => page.screenshot started
+[DEBUG] [2025-04-12T13:53:48.591Z] Browser console info: <= page.screenshot succeeded
+[DEBUG] [2025-04-12T13:53:48.597Z] Screenshot saved: login_registration_error-1744466028373.png
+[ERROR] [2025-04-12T13:53:48.598Z] Cannot proceed due to registration or profile completion failure
+[DEBUG] [2025-04-12T13:53:48.600Z] Browser console info: => page.screenshot started
+[DEBUG] [2025-04-12T13:53:48.719Z] Browser console info: <= page.screenshot succeeded
+[DEBUG] [2025-04-12T13:53:48.723Z] Screenshot saved: test_completion-1744466028600.png
+[INFO] [2025-04-12T13:53:48.724Z] 
+==== TEST SUMMARY ====
+[INFO] [2025-04-12T13:53:48.725Z] Registration: error
+[INFO] [2025-04-12T13:53:48.728Z] Profile Completion: Failed
+[INFO] [2025-04-12T13:53:48.730Z] Admin Dashboard: Failed
+[INFO] [2025-04-12T13:53:48.731Z] Invitations: 0/0 successful
+[INFO] [2025-04-12T13:53:48.733Z] Distributor Creation: Failed
+[INFO] [2025-04-12T13:53:48.735Z] Installation Creation: Failed
+[ERROR] [2025-04-12T13:53:48.736Z] SOME TESTS FAILED. See log for details.
+[DEBUG] [2025-04-12T13:53:48.741Z] Browser console info: => browserContext.close started
+[DEBUG] [2025-04-12T13:53:48.839Z] Browser console info: <= browserContext.close succeeded

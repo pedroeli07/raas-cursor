@@ -1,0 +1,68 @@
+Comprehensive Test Log - 2025-04-12T17:41:58.129Z
+
+[2025-04-12T17:41:58.130Z] [INFO] Starting comprehensive tests at 2025-04-12T17:41:58.130Z
+[2025-04-12T17:41:58.174Z] [INFO] Testing server health...
+[2025-04-12T17:42:02.012Z] [SUCCESS] Server is healthy: {"status":"ok","timestamp":"2025-04-12T17:42:01.996Z","environment":"development","baseUrl":"http://localhost:3000","serverTime":"12/04/2025, 14:42:01"}
+[2025-04-12T17:42:02.015Z] [SECTION] ==================================================
+[2025-04-12T17:42:02.017Z] [SECTION]   SUPER ADMIN FLOW  
+[2025-04-12T17:42:02.019Z] [SECTION] ==================================================
+[2025-04-12T17:42:02.020Z] [INFO] Logging in as pedro-eli@hotmail.com (SUPER_ADMIN)...
+[2025-04-12T17:42:03.701Z] [SUCCESS] Login successful as SUPER_ADMIN
+[2025-04-12T17:42:03.703Z] [INFO] User info: undefined
+[2025-04-12T17:42:03.705Z] [INFO] Retrieving all invitations...
+[2025-04-12T17:42:05.224Z] [SUCCESS] Retrieved 4 invitations
+[2025-04-12T17:42:05.225Z] [INFO] All invitations: [{"id":"cm9ei2xu60005f7ls7m9tuk9b","email":"energy-renter-test-1744479538794@example.com","name":"Test Energy Renter","role":"ENERGY_RENTER","status":"PENDING","message":"Test invitation for energy renter","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:39:07.854Z","expiresAt":"2025-04-13T17:39:07.852Z"},{"id":"cm9ei2xc20003f7lslqrt9dzf","email":"admin-test-1744479538794@example.com","name":"Test Admin","role":"ADMIN","status":"PENDING","message":"Test invitation for admin","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:39:07.203Z","expiresAt":"2025-04-13T17:39:07.200Z"},{"id":"cm9ei2woq0001f7lscv88jgun","email":"customer-test-1744479538794@example.com","name":"Test Customer","role":"CUSTOMER","status":"PENDING","message":"Test invitation for customer","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:39:06.361Z","expiresAt":"2025-04-13T17:39:06.358Z"},{"id":"cm9eh7me10004f70c8j2mp5i5","email":"pedroelimaciel592@gmail.com","name":"ddd","role":"ENERGY_RENTER","status":"PENDING","message":null,"sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:14:46.680Z","expiresAt":"2025-04-13T17:14:46.674Z"}]
+[2025-04-12T17:42:05.226Z] [INFO] Creating invitation for admin-1744479718129@example.com with role ADMIN...
+[2025-04-12T17:42:06.597Z] [ERROR] Failed to create invitation: Internal Server Error
+[2025-04-12T17:42:06.598Z] [ERROR] Failed to create invitation for ADMIN, skipping user tests
+[2025-04-12T17:42:07.675Z] [INFO] Creating invitation for admin-staff-1744479718129@example.com with role ADMIN_STAFF...
+[2025-04-12T17:42:08.529Z] [ERROR] Failed to create invitation: Internal Server Error
+[2025-04-12T17:42:08.530Z] [ERROR] Failed to create invitation for ADMIN_STAFF, skipping user tests
+[2025-04-12T17:42:09.534Z] [INFO] Creating invitation for customer-1744479718129@example.com with role CUSTOMER...
+[2025-04-12T17:42:10.198Z] [ERROR] Failed to create invitation: Internal Server Error
+[2025-04-12T17:42:10.198Z] [ERROR] Failed to create invitation for CUSTOMER, skipping user tests
+[2025-04-12T17:42:11.206Z] [INFO] Creating invitation for energy-renter-1744479718129@example.com with role ENERGY_RENTER...
+[2025-04-12T17:42:11.858Z] [ERROR] Failed to create invitation: Internal Server Error
+[2025-04-12T17:42:11.859Z] [ERROR] Failed to create invitation for ENERGY_RENTER, skipping user tests
+[2025-04-12T17:42:12.863Z] [INFO] Retrieving all invitations...
+[2025-04-12T17:42:13.214Z] [SUCCESS] Retrieved 8 invitations
+[2025-04-12T17:42:13.226Z] [INFO] All invitations: [{"id":"cm9ei6voz000df7lshcstn0wp","email":"energy-renter-1744479718129@example.com","name":"Test Energy Renter","role":"ENERGY_RENTER","status":"PENDING","message":"Test invitation for energy renter","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:42:11.699Z","expiresAt":"2025-04-13T17:42:11.697Z"},{"id":"cm9ei6ueo000bf7lsvjx8tdt6","email":"customer-1744479718129@example.com","name":"Test Customer","role":"CUSTOMER","status":"PENDING","message":"Test invitation for customer","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:42:10.032Z","expiresAt":"2025-04-13T17:42:10.030Z"},{"id":"cm9ei6t4k0009f7lsu03evqe7","email":"admin-staff-1744479718129@example.com","name":"Test Admin Staff","role":"ADMIN_STAFF","status":"PENDING","message":"Test invitation for admin staff","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:42:08.372Z","expiresAt":"2025-04-13T17:42:08.369Z"},{"id":"cm9ei6re90007f7lsiezwkemd","email":"admin-1744479718129@example.com","name":"Test Admin","role":"ADMIN","status":"PENDING","message":"Test invitation for admin","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:42:06.125Z","expiresAt":"2025-04-13T17:42:06.053Z"},{"id":"cm9ei2xu60005f7ls7m9tuk9b","email":"energy-renter-test-1744479538794@example.com","name":"Test Energy Renter","role":"ENERGY_RENTER","status":"PENDING","message":"Test invitation for energy renter","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:39:07.854Z","expiresAt":"2025-04-13T17:39:07.852Z"},{"id":"cm9ei2xc20003f7lslqrt9dzf","email":"admin-test-1744479538794@example.com","name":"Test Admin","role":"ADMIN","status":"PENDING","message":"Test invitation for admin","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:39:07.203Z","expiresAt":"2025-04-13T17:39:07.200Z"},{"id":"cm9ei2woq0001f7lscv88jgun","email":"customer-test-1744479538794@example.com","name":"Test Customer","role":"CUSTOMER","status":"PENDING","message":"Test invitation for customer","sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:39:06.361Z","expiresAt":"2025-04-13T17:39:06.358Z"},{"id":"cm9eh7me10004f70c8j2mp5i5","email":"pedroelimaciel592@gmail.com","name":"ddd","role":"ENERGY_RENTER","status":"PENDING","message":null,"sender":{"id":"cm9eh1df80002f70cy27k4cwr","name":"PEDRO ELI","email":"pedro-eli@hotmail.com"},"createdAt":"2025-04-12T17:14:46.680Z","expiresAt":"2025-04-13T17:14:46.674Z"}]
+[2025-04-12T17:42:13.502Z] [INFO] Created 4 new invitations
+[2025-04-12T17:42:13.505Z] [INFO] Testing page rendering: http://localhost:3000/dashboard...
+[2025-04-12T17:42:15.066Z] [SUCCESS] Page rendered successfully with status 200
+[2025-04-12T17:42:15.067Z] [INFO] Testing page rendering: http://localhost:3000/users...
+[2025-04-12T17:42:24.356Z] [ERROR] Page rendering failed: Expected status 200, got 404
+[2025-04-12T17:42:24.359Z] [INFO] Testing page rendering: http://localhost:3000/invitations...
+[2025-04-12T17:42:24.687Z] [ERROR] Page rendering failed: Expected status 200, got 404
+[2025-04-12T17:42:24.688Z] [INFO] Testing page rendering: http://localhost:3000/distributors...
+[2025-04-12T17:42:24.750Z] [ERROR] Page rendering failed: Expected status 200, got 404
+[2025-04-12T17:42:24.751Z] [INFO] Testing page rendering: http://localhost:3000/installations...
+[2025-04-12T17:42:24.809Z] [ERROR] Page rendering failed: Expected status 200, got 404
+[2025-04-12T17:42:24.810Z] [INFO] Logging out current user...
+[2025-04-12T17:42:24.813Z] [SUCCESS] User logged out successfully
+[2025-04-12T17:42:24.816Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.818Z] [SECTION]   ADMIN FLOW  
+[2025-04-12T17:42:24.822Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.824Z] [ERROR] No invitation token for admin, skipping admin flow
+[2025-04-12T17:42:24.827Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.829Z] [SECTION]   ADMIN STAFF FLOW  
+[2025-04-12T17:42:24.831Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.833Z] [ERROR] No invitation token for admin staff, skipping admin staff flow
+[2025-04-12T17:42:24.836Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.838Z] [SECTION]   CUSTOMER FLOW  
+[2025-04-12T17:42:24.841Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.843Z] [ERROR] No invitation token for customer, skipping customer flow
+[2025-04-12T17:42:24.846Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.848Z] [SECTION]   ENERGY RENTER FLOW  
+[2025-04-12T17:42:24.850Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.853Z] [ERROR] No invitation token for energy renter, skipping energy renter flow
+[2025-04-12T17:42:24.855Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.858Z] [SECTION]   TEST SUMMARY  
+[2025-04-12T17:42:24.860Z] [SECTION] ==================================================
+[2025-04-12T17:42:24.862Z] [INFO] Test data summary:
+[2025-04-12T17:42:24.864Z] [INFO] - Users created: 0
+[2025-04-12T17:42:24.867Z] [INFO] - Invitations created: 0
+[2025-04-12T17:42:24.869Z] [INFO] - Distributors created: 0
+[2025-04-12T17:42:24.872Z] [INFO] - Installations created: 0
+[2025-04-12T17:42:24.875Z] [INFO] All tests completed at 2025-04-12T17:42:24.874Z
+[2025-04-12T17:42:24.877Z] [INFO] See log file for details: C:\raas-cursor\scripts\comprehensive-test-2025-04-12T17-41-58-124Z.log

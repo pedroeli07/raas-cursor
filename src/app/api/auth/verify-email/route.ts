@@ -1,10 +1,10 @@
 // Path: src/app/api/auth/verify-email/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { VerificationType } from '@prisma/client';
 import { validateVerificationCode } from '@/lib/utils/verification';
-import { verifyEmailSchema } from '@/lib/schemas/schemas';
+import { verifyEmailSchema } from '../../../../lib/schemas/schemas';
 import jwt from 'jsonwebtoken';
 
 export async function POST(req: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     log.debug('Validated email verification data', { userId });
 
     // Find user
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId }
     });
 
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Atualizar status de verificação
-    await db.user.update({
+    await prisma.user.update({
       where: { id: userId },
       data: { emailVerified: true }
     });
@@ -85,11 +85,15 @@ function generateAuthToken(user: any) {
     throw new Error('JWT secret is not configured.');
   }
 
+  // Check if the user has completed their profile
+  const isProfileCompleted = (user as any).profileCompleted || false;
+
   const tokenPayload = {
     userId: user.id,
     email: user.email,
     role: user.role,
+    profileCompleted: isProfileCompleted
   };
 
-  return jwt.sign(tokenPayload, jwtSecret, { expiresIn: '1h' });
+  return jwt.sign(tokenPayload, jwtSecret, { expiresIn: '24h' });
 } 

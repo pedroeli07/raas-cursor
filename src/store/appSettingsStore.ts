@@ -15,13 +15,13 @@ export interface AppSetting {
 
 // Interface para tipar o valor de configurações conhecidas
 interface AppSettingsValues {
-  DEFAULT_DISCOUNT_RATE: number; // Porcentagem padrão de desconto para clientes
-  CREDIT_EXPIRATION_MONTHS: number; // Meses até expiração de créditos
-  MAINTENANCE_MODE: boolean; // Sistema em manutenção?
-  BILLING_DATE: number; // Dia do mês para geração de faturas
-  PLATFORM_FEE_PERCENTAGE: number; // Taxa da plataforma (%)
-  DEFAULT_GENERATION_QUOTA: number; // Quota padrão para novas alocações (%)
-  MIN_PAYMENT_AMOUNT: number; // Valor mínimo para emissão de fatura (em centavos)
+  defaultDiscountRate: number; // Porcentagem padrão de desconto para clientes
+  creditExpirationMonths: number; // Meses até expiração de créditos
+  maintenanceMode: boolean; // Sistema em manutenção?
+  billingDate: number; // Dia do mês para geração de faturas
+  platformFeePercentage: number; // Taxa da plataforma (%)
+  defaultGenerationQuota: number; // Quota padrão para novas alocações (%)
+  minPaymentAmount: number; // Valor mínimo para emissão de fatura (em centavos)
 }
 
 // Interface para o store

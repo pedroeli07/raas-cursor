@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,34 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  SUPER_ADMIN
-  ADMIN
-  ADMIN_STAFF
-  CUSTOMER
-  ENERGY_RENTER
-}
-
-enum InvitationStatus {
-  PENDING
-  ACCEPTED
-  REVOKED
-  EXPIRED
-}
-
-enum InstallationType {
-  GENERATOR
-  CONSUMER
-}
-
-enum AddressType {
-  USER
-  INSTALLATION
-  DISTRIBUTOR
-}
-
 model Address {
-  id            String       @id @default(cuid())
+  id            String         @id @default(cuid())
   street        String
   number        String
   complement    String?
@@ -48,200 +16,183 @@ model Address {
   city          String
   state         String
   zip           String
-  type          AddressType  @default(USER) // Indica o tipo de entidade a que este endereço pertence
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  users         User[]
+  type          AddressType    @default(USER)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   installations Installation[]
+  users         User[]
   distributors  Distributor[]
 }
 
 model Contact {
-  id        String   @id @default(cuid()) @unique
-  phones    String[]
-  emails    String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User[]
+  id           String        @id @unique @default(cuid())
+  phones       String[]
+  emails       String[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  users        User[]
+  distributors Distributor[]
 }
 
 model User {
-  id                String   @id @default(cuid())
-  name              String?
-  email             String   // Adicionado email diretamente ao User
-  password          String
-  role              Role
-  addressId         String?
-  address           Address? @relation(fields: [addressId], references: [id])
-  contactId         String?
-  contact           Contact? @relation(fields: [contactId], references: [id])
-  notifications     Notification[]
-  helpRequests      HelpRequest[] @relation("UserHelpRequests")
-  adminHelpRequests HelpRequest[] @relation("AdminHelpRequests")
-  helpResponses     HelpResponse[]
-  installations     Installation[]
-  passwordResets    PasswordReset[]
-  verificationCodes VerificationCode[]
-  invoices          Invoice[]
-  emailVerified     Boolean  @default(true)     // Alterado para true por padrão
-  isTwoFactorEnabled Boolean @default(false)    // Alterado para false por padrão
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@unique([email]) // Garantir email único
+  id                 String             @id @default(cuid())
+  name               String?
+  email              String             @unique
+  password           String
+  role               Role
+  addressId          String?
+  contactId          String?
+  documentId         String?
+  emailVerified      Boolean            @default(true)
+  isTwoFactorEnabled Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  profileCompleted   Boolean            @default(true)
+  adminHelpRequests  HelpRequest[]      @relation("AdminHelpRequests")
+  helpRequests       HelpRequest[]      @relation("UserHelpRequests")
+  helpResponses      HelpResponse[]
+  installations      Installation[]
+  invitations        Invitation[]       @relation("InvitationSenders")
+  notifications      Notification[]
+  passwordResets     PasswordReset[]
+  address            Address?           @relation(fields: [addressId], references: [id])
+  contact            Contact?           @relation(fields: [contactId], references: [id])
+  document           Document?          @relation(fields: [documentId], references: [id])
+  verificationCodes  VerificationCode[]
+  invoices           Invoice[]
 }
 
 model Invitation {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   email     String
   name      String?
   role      Role
-  token     String   @unique
+  token     String           @unique
+  message   String?
   status    InvitationStatus @default(PENDING)
-  createdAt DateTime @default(now())
+  senderId  String?
+  createdAt DateTime         @default(now())
   expiresAt DateTime
+  sender    User?            @relation("InvitationSenders", fields: [senderId], references: [id])
 }
 
 model HelpRequest {
-  id          String           @id @default(cuid())
-  title       String
-  message     String
-  status      HelpRequestStatus @default(OPEN)
-  userId      String           // User who created the request
-  user        User            @relation("UserHelpRequests", fields: [userId], references: [id])
-  adminId     String?         // Admin who is handling the request
-  admin       User?           @relation("AdminHelpRequests", fields: [adminId], references: [id])
-  responses   HelpResponse[]
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id        String            @id @default(cuid())
+  title     String
+  message   String
+  status    HelpRequestStatus @default(OPEN)
+  userId    String
+  adminId   String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  admin     User?             @relation("AdminHelpRequests", fields: [adminId], references: [id])
+  user      User              @relation("UserHelpRequests", fields: [userId], references: [id])
+  responses HelpResponse[]
 }
 
 model HelpResponse {
   id            String      @id @default(cuid())
   message       String
   helpRequestId String
-  helpRequest   HelpRequest @relation(fields: [helpRequestId], references: [id])
-  userId        String      // User who wrote the response (can be admin or requester)
-  user          User        @relation(fields: [userId], references: [id])
+  userId        String
   createdAt     DateTime    @default(now())
+  helpRequest   HelpRequest @relation(fields: [helpRequestId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
 }
 
 model Notification {
-  id          String           @id @default(cuid())
-  title       String
-  message     String
-  type        NotificationType @default(SYSTEM)
-  status      NotificationStatus @default(UNREAD)
-  userId      String          // User who should receive the notification
-  user        User            @relation(fields: [userId], references: [id])
-  relatedId   String?         // Optional ID of related entity (e.g. invoice ID)
-  readAt      DateTime?       // When the notification was read
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-}
-
-enum NotificationType {
-  SYSTEM      // For system notifications like invoice creation
-  HELP        // For help request updates
-}
-
-enum NotificationStatus {
-  UNREAD
-  READ
-  ARCHIVED
-}
-
-enum HelpRequestStatus {
-  OPEN        // New request
-  IN_PROGRESS // Being handled by admin
-  RESOLVED    // Request completed
-  CLOSED      // Request closed without resolution
+  id        String             @id @default(cuid())
+  title     String
+  message   String
+  type      NotificationType   @default(SYSTEM)
+  status    NotificationStatus @default(UNREAD)
+  userId    String
+  relatedId String?
+  readAt    DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  user      User               @relation(fields: [userId], references: [id])
 }
 
 model Installation {
-  id                    String           @id @default(cuid())
-  installationNumber    String           // Deve ser único por distribuidora
-  type                  InstallationType
-  distributorId         String
-  distributor           Distributor      @relation(fields: [distributorId], references: [id])
-  ownerId               String           // ID do User (ENERGY_RENTER ou CUSTOMER)
-  owner                 User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  addressId             String           // Endereço da instalação é obrigatório
-  address               Address          @relation(fields: [addressId], references: [id])
-  energyBills           EnergyBillData[] // Relação inversa para EnergyBillData
-  invoices              Invoice[]        // Relação inversa para Invoice
-  // Relações para instalation quotas
-  asConsumerQuotas      InstallationQuota[] @relation("ConsumerQuotas")
-  asGeneratorQuotas     InstallationQuota[] @relation("GeneratorQuotas")
-  // Relações para energy credits
-  asConsumerCredits     EnergyCredit[]   @relation("ConsumerCredits")
-  asGeneratorCredits    EnergyCredit[]   @relation("GeneratorCredits")
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
+  id                 String                @id @default(cuid())
+  installationNumber String
+  type               InstallationType
+  distributorId      String
+  ownerId            String?
+  addressId          String
+  status             InstallationStatus    @default(ACTIVE)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  cemigEnergyBills   CemigEnergyBillData[] @relation("CemigBillsForInstallation")
+  address            Address               @relation(fields: [addressId], references: [id])
+  distributor        Distributor           @relation(fields: [distributorId], references: [id])
+  owner              User?                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  asConsumerCredits  EnergyCredit[]        @relation("ConsumerCredits")
+  asGeneratorCredits EnergyCredit[]        @relation("GeneratorCredits")
+  asConsumerQuotas   InstallationQuota[]   @relation("ConsumerQuotas")
+  asGeneratorQuotas  InstallationQuota[]   @relation("GeneratorQuotas")
+  invoices           Invoice[]
 
-  @@unique([installationNumber, distributorId]) // Garante que o número da instalação seja único para cada distribuidora
+  @@unique([installationNumber, distributorId])
   @@index([ownerId])
   @@index([distributorId])
   @@index([addressId])
 }
 
-// Modelo para armazenar dados brutos do upload da planilha de saldo/consumo
-model EnergyBillData { // Renomeado de CemigEnergyBillData
-  id                     String    @id @default(cuid())
-  uploadBatchId          String    // Identificador do lote de upload
-  installationId         String    // Link direto para a Installation
-  installation           Installation @relation(fields: [installationId], references: [id], onDelete: Cascade) // Relação com Installation
-  period                 String    // Período (MM/AAAA)
-  modality               String?   // Modalidade (ex: Auto Consumo-Geradora)
-  quota                  Float?    // Quota (%)
-  tariffPost             String?   // Posto Horário (ex: Fora Ponta/Geral)
-  previousBalance        Float?    // Saldo Anterior
-  expiredBalance         Float?    // Saldo Expirado
-  consumption            Float?    // Consumo [kWh]
-  generation             Float?    // Geração [kWh]
-  compensation           Float?    // Compensação [kWh]
-  transferred            Float?    // Transferido [kWh]
-  received               Float?    // Recebimento [kWh]
-  currentBalance         Float?    // Saldo Atual
-  expiringBalanceAmount  Float?    // Quantidade Saldo a Expirar
-  expiringBalancePeriod  String?   // Período Saldo a Expirar (MM/AAAA)
-  dataSource             String?   // Opcional: Indica a origem (ex: 'cemig_upload', 'manual')
-  uploadTimestamp        DateTime  @default(now())
+model CemigEnergyBillData {
+  id                    String                @id @default(cuid())
+  uploadBatchId         String
+  installationId        String
+  period                String
+  modality              String?
+  quota                 Float?
+  tariffPost            String?
+  previousBalance       Float?
+  expiredBalance        Float?
+  consumption           Float?
+  generation            Float?
+  compensation          Float?
+  transferred           Float?
+  received              Float?
+  currentBalance        Float?
+  expiringBalanceAmount Float?
+  expiringBalancePeriod String?
+  dataSource            String?
+  uploadTimestamp       DateTime              @default(now())
+  installation          Installation          @relation("CemigBillsForInstallation", fields: [installationId], references: [id], onDelete: Cascade)
+  uploadBatch           EnergyDataUploadBatch @relation(fields: [uploadBatchId], references: [id])
 
-  @@unique([installationId, period]) // Garantir um registro por instalação por período
+  @@unique([installationId, period])
   @@index([uploadBatchId])
 }
 
 model PasswordReset {
-  id        String   @id @default(cuid())
-  token     String   @unique
+  id        String    @id @default(cuid())
+  token     String    @unique
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime @default(now())
-  
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+
   @@index([token])
   @@index([userId])
 }
 
 model VerificationCode {
-  id          String   @id @default(cuid())
-  code        String
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  type        VerificationType
-  expiresAt   DateTime
-  usedAt      DateTime?
-  createdAt   DateTime @default(now())
-  
+  id        String           @id @default(cuid())
+  code      String
+  userId    String
+  type      VerificationType
+  used      Boolean          @default(false)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id])
+
   @@index([userId])
   @@index([code])
-}
-
-enum VerificationType {
-  EMAIL_VERIFICATION // For first-time email verification
-  LOGIN              // For 2FA login verification
 }
 
 model InstallationQuota {
@@ -271,16 +222,19 @@ model KwhPrice {
 }
 
 model Distributor {
-  id            String      @id @default(cuid())
-  name          String      @unique
-  code          String      @unique(map: "distributors_code_unique")
+  id            String                  @id @default(cuid())
+  name          String                  @unique
+  code          String                  @unique(map: "distributors_code_unique")
   state         String
-  kwhPrices     KwhPrice[]
-  addressId     String      // Endereço é obrigatório para distribuidora
-  address       Address     @relation(fields: [addressId], references: [id])
+  addressId     String
+  contactId     String?
+  createdAt     DateTime?               @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime?               @default(now()) @map("updated_at") @db.Timestamp(6)
   installations Installation[]
-  createdAt     DateTime?   @default(now()) @map("created_at") @db.Timestamp(6)
-  updatedAt     DateTime?   @default(now()) @map("updated_at") @db.Timestamp(6)
+  address       Address                 @relation(fields: [addressId], references: [id])
+  contact       Contact?                @relation(fields: [contactId], references: [id])
+  uploadBatches EnergyDataUploadBatch[]
+  kwhPrices     KwhPrice[]
 
   @@map("distributors")
 }
@@ -306,35 +260,127 @@ model EnergyCredit {
 }
 
 model Invoice {
-  id             String       @id @default(cuid())
-  userId         String       @map("user_id")
-  referenceMonth String       @map("reference_month")
-  totalAmount    Int          @map("total_amount")
-  dueDate        DateTime     @map("due_date") @db.Timestamp(6)
-  status         String       @default("pending")
-  paidAt         DateTime?    @map("paid_at") @db.Timestamp(6)
-  billingAddress String       @map("billing_address")
-  installationId String       @map("installation_id")
-  createdAt      DateTime?    @default(now()) @map("created_at") @db.Timestamp(6)
-  installation   Installation @relation(fields: [installationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user           User         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                    String       @id @default(cuid())
+  user_id               String
+  reference_month       String
+  total_amount          Int
+  invoice_amount        Int?
+  savings               Int?
+  savings_percentage    Float?
+  discount_percentage   Float?
+  due_date              DateTime     @db.Timestamp(6)
+  status                String       @default("pending")
+  paid_at               DateTime?    @db.Timestamp(6)
+  billing_address       String
+  installation_id       String
+  customer_id           String?
+  invoice_number        String?
+  created_at            DateTime?    @default(now()) @db.Timestamp(6)
+  last_email_sent_at    DateTime?    @db.Timestamp(6)
+  last_whatsapp_sent_at DateTime?    @db.Timestamp(6)
+  pdf_generated_at      DateTime?    @db.Timestamp(6)
+  Installation          Installation @relation(fields: [installation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User                  User         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("invoices")
 }
 
-// Novo modelo para armazenar configurações globais da aplicação
 model AppSettings {
-  id                String    @id @default(cuid())
-  key               String    @unique // Nome/chave da configuração (ex: "DEFAULT_DISCOUNT_RATE")
-  value             String    // Valor da configuração (armazenado como string, pode ser convertido depois)
-  description       String?   // Descrição opcional da configuração
-  type              String    // Tipo de dado (number, string, boolean, json)
-  category          String    // Categoria da configuração (billing, system, credits, etc)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  createdById       String?   // Opcional: quem criou esta configuração
-  lastUpdatedById   String?   // Opcional: quem atualizou por último
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String
+  description     String?
+  type            String
+  category        String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdById     String?
+  lastUpdatedById String?
 
   @@index([category])
   @@index([key])
+}
+
+model Document {
+  id            String   @id @default(cuid())
+  cpf           String?  @unique
+  cnpj          String?  @unique
+  rg            String?
+  issuingEntity String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  users         User[]
+}
+
+model EnergyDataUploadBatch {
+  id             String                @id @default(cuid())
+  fileName       String
+  distributorId  String
+  status         String                @default("success")
+  totalCount     Int                   @default(0)
+  processedCount Int                   @default(0)
+  errorCount     Int                   @default(0)
+  notFoundCount  Int                   @default(0)
+  processingType String                @default("cemig")
+  createdAt      DateTime              @default(now())
+  completedAt    DateTime?
+  energyBillData CemigEnergyBillData[]
+  distributor    Distributor           @relation(fields: [distributorId], references: [id])
+
+  @@index([distributorId])
+  @@map("energy_data_upload_batches")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  ADMIN_STAFF
+  CUSTOMER
+  ENERGY_RENTER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+enum InstallationType {
+  GENERATOR
+  CONSUMER
+}
+
+enum AddressType {
+  USER
+  INSTALLATION
+  DISTRIBUTOR
+}
+
+enum NotificationType {
+  SYSTEM
+  HELP
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+enum HelpRequestStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum VerificationType {
+  EMAIL_VERIFICATION
+  LOGIN
+}
+
+enum InstallationStatus {
+  ACTIVE
+  INACTIVE
 }

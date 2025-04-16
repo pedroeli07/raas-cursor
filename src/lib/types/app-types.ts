@@ -1,5 +1,8 @@
 // Tipos para a aplicação RaaS Solar
 
+import { Installation } from "@prisma/client";
+
+
 // Tipos de usuários do sistema
 export enum UserRole {
   SUPER_ADMIN = 'super_admin',
@@ -10,8 +13,7 @@ export enum UserRole {
   USER = 'user'
 }
 
-// Tipo de unidade (consumidora ou geradora)
-export type InstallationType = 'CONSUMER' | 'GENERATOR';
+
 
 // Interface de usuário
 export interface User {
@@ -24,19 +26,13 @@ export interface User {
   profileImageUrl?: string;
 }
 
-// Interface de instalação
-export interface Installation {
+// Interface de preço de kWh
+export interface KwhPrice {
   id: string;
-  installationNumber: string;
-  type: InstallationType;
-  address?: Address;
-  ownerId?: string;
-  owner?: User;
+  price: number;
+  startDate: Date;
+  endDate?: Date;
   distributorId: string;
-  distributor?: Distributor;
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
 }
 
 // Interface da distribuidora
@@ -44,6 +40,9 @@ export interface Distributor {
   id: string;
   name: string;
   code: string;
+  pricePerKwh: number;
+  address?: Address;
+  kwhPrices?: KwhPrice[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -74,6 +73,26 @@ export interface Allocation {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface EnergyBalance {
+  id: string;
+  installationId: string;
+  installation?: Installation;
+  balance: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+
+export interface UserWithDetailsDto extends User {
+  installations?: Installation[];
+  allocations?: Allocation[];
+  invoices?: Invoice[];
+  energyBalance?: EnergyBalance;
+  metadata?: Record<string, any>;
+} 
+
 
 // Interface de registro de energia
 export interface EnergyRecord {
@@ -212,19 +231,3 @@ export interface SupportMessage {
   createdAt: Date;
 }
 
-export interface EnergyBalance {
-  id: string;
-  installationId: string;
-  installation?: Installation;
-  balance: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UserWithDetailsDto extends User {
-  installations?: Installation[];
-  allocations?: Allocation[];
-  invoices?: Invoice[];
-  energyBalance?: EnergyBalance;
-  metadata?: Record<string, any>;
-} 

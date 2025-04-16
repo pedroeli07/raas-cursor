@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
-
+import { Role } from '@prisma/client';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -11,9 +11,9 @@ export async function GET(request: NextRequest) {
     const rolesFilter = roles ? roles.split(',') : undefined;
     
     // Obter usuários filtrados por papel
-    const users = await db.user.findMany({
+    const users = await prisma.user.findMany({
       where: {
-        role: rolesFilter ? { in: rolesFilter } : undefined,
+        role: rolesFilter ? { in: rolesFilter as Role[] } : undefined,
       },
       select: {
         id: true,

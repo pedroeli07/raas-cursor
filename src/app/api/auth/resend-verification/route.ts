@@ -1,6 +1,6 @@
 // Path: src/app/api/auth/resend-verification/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import { backendLog as log } from '@/lib/logs/logger';
 import { z } from 'zod';
 import { VerificationType } from '@prisma/client';
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     log.debug('Validated resend verification data', { userId, type });
 
     // Find user
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { contact: true }
     });
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check existing codes to prevent abuse (throttling)
-    const recentCodes = await db.verificationCode.findMany({
+    const recentCodes = await prisma.verificationCode.findMany({
       where: {
         userId,
         type,
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     // Send a new verification code
     const isCodeSent = await createAndSendVerificationCode(
       userId,
-      user.contact.email,
+      user.contact.emails[0],
       user.name || '',
       type
     );
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     log.info('Verification code resent successfully', { 
       userId, 
-      email: user.contact.email,
+      email: user.contact.emails[0],
       type 
     });
 

@@ -5,6 +5,13 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { frontendLog as log } from '@/lib/logs/logger';
 import { jwtDecode } from "jwt-decode";
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
 
 // Interface para o token decodificado
 interface DecodedToken {
@@ -164,112 +171,141 @@ const VerifyTwoFactorPage = () => {
 
   if (!userId) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900">Verificação de Dois Fatores</h2>
-            <p className="mt-2 text-sm text-red-600">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto w-full max-w-md"
+      >
+        <Card className="border-border/40 bg-white/90 shadow-lg backdrop-blur-sm dark:bg-gray-900/90">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-center text-2xl font-bold">Verificação de Dois Fatores</CardTitle>
+            <CardDescription className="text-center text-red-500 dark:text-red-400">
               Não foi possível identificar seu usuário. Por favor, retorne à página de login.
-            </p>
-            <div className="mt-4">
-              <Link href="/login" className="text-indigo-600 hover:text-indigo-500">
-                Voltar para o Login
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="flex justify-center">
+            <Button asChild variant="default">
+              <Link href="/login">Voltar para o Login</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Verificação de Dois Fatores</h2>
-          <p className="mt-2 text-sm text-gray-600">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="mx-auto w-full max-w-md"
+    >
+      <Card className="border-border/40 bg-white/90 shadow-lg backdrop-blur-sm dark:bg-gray-900/90">
+        <CardHeader className="space-y-1 pb-4">
+          <div className="flex justify-center">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="mb-2 rounded-full bg-primary/10 p-2 text-primary"
+            >
+              <ShieldCheck className="h-6 w-6" />
+            </motion.div>
+          </div>
+          <CardTitle className="text-center text-2xl font-bold">Verificação de Dois Fatores</CardTitle>
+          <CardDescription className="text-center">
             Enviamos um código de verificação para seu email. 
             Por favor, insira o código abaixo para continuar o login.
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
         
-        {!verified ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-700">
-                Código de Verificação
-              </label>
-              <input
-                id="code"
-                name="code"
-                type="text"
-                maxLength={6}
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="Insira o código de 6 dígitos"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                disabled={loading || verified}
-              />
-            </div>
-            
-            {error && (
-              <p className="text-sm text-red-600" role="alert">
-                {error}
-              </p>
-            )}
-            
-            {message && (
-              <p className="text-sm text-green-600" role="status">
-                {message}
-              </p>
-            )}
-            
-            <div className="flex flex-col space-y-4">
-              <button
-                type="submit"
-                disabled={loading || verified || code.length < 6}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Verificando...' : 'Verificar'}
-              </button>
+        <CardContent>
+          {!verified ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="code">Código de Verificação</Label>
+                <Input
+                  id="code"
+                  name="code"
+                  type="text"
+                  maxLength={6}
+                  required
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
+                  placeholder="Insira o código de 6 dígitos"
+                  className="bg-white text-center text-lg tracking-widest dark:bg-gray-950"
+                  disabled={loading || verified}
+                />
+              </div>
               
-              <button
-                type="button"
-                onClick={handleResendCode}
-                disabled={loading || verified}
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              {message && (
+                <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950/60 dark:text-green-300">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <AlertDescription>{message}</AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="flex flex-col space-y-4">
+                <Button
+                  type="submit"
+                  disabled={loading || verified || code.length < 6}
+                  className="w-full"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Verificando...
+                    </span>
+                  ) : (
+                    'Verificar'
+                  )}
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleResendCode}
+                  disabled={loading || verified}
+                  className="w-full"
+                >
+                  Reenviar Código
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <div className="flex flex-col items-center space-y-4 py-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20,
+                  delay: 0.1
+                }}
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30"
               >
-                Reenviar Código
-              </button>
+                <CheckCircle2 className="h-10 w-10 text-green-600 dark:text-green-400" />
+              </motion.div>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+                Autenticação bem-sucedida!
+              </h3>
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                Você será redirecionado para o dashboard em instantes.
+              </p>
             </div>
-          </form>
-        ) : (
-          <div className="text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-green-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            <p className="mt-2 text-lg font-medium text-gray-900">
-              Autenticação bem-sucedida!
-            </p>
-            <p className="mt-1 text-sm text-gray-600">
-              Você será redirecionado para o dashboard em instantes.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

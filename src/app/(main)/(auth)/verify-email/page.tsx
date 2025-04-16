@@ -2,285 +2,130 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { frontendLog as log } from '@/lib/logs/logger';
-import { jwtDecode } from "jwt-decode";
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { HeroColumn } from '@/components/auth/hero-components';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
-// Interface para o token decodificado
-interface DecodedToken {
-  userId: string;
-  email: string;
-  role: string;
-  iat?: number;
-  exp?: number;
-}
-
-const VerifyEmailPage = () => {
-  const [code, setCode] = useState('');
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [verified, setVerified] = useState(false);
-
+export default function VerifyEmailPage() {
+  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const [message, setMessage] = useState('Verificando seu email...');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const token = searchParams.get('token');
 
-  // Get userId from URL or localStorage
   useEffect(() => {
-    const userIdFromUrl = searchParams.get('userId');
-    
-    if (userIdFromUrl) {
-      setUserId(userIdFromUrl);
-      log.debug('Got userId from URL', { userId: userIdFromUrl });
-    } else {
-      // Try to load from localStorage (from registration response)
-      try {
-        const registrationData = localStorage.getItem('registration_data');
-        if (registrationData) {
-          const data = JSON.parse(registrationData);
-          if (data.id) {
-            setUserId(data.id);
-            log.debug('Got userId from localStorage', { userId: data.id });
-          }
-        }
-      } catch (err) {
-        log.error('Error parsing registration data from localStorage', { error: err });
+    async function verifyEmail() {
+      if (!token) {
+        log.warn('Email verification attempted without token');
+        setStatus('error');
+        setMessage('Token de verificação não encontrado.');
+        return;
       }
-    }
-  }, [searchParams]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!userId) {
-      setError('ID do usuário não encontrado. Por favor, retorne à página de registro.');
-      return;
-    }
-    
-    if (!code || code.length < 6) {
-      setError('Por favor, insira o código de verificação completo.');
-      return;
-    }
-    
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-    
-    try {
-      log.debug('Submitting verification code', { userId, code: '******' });
-      
-      const response = await fetch('/api/auth/verify-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, code }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Falha ao verificar o email.');
-      }
-      
-      setVerified(true);
-      setMessage('Email verificado com sucesso! Redirecionando para o dashboard...');
-      
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token);
-        document.cookie = `auth_token=${data.token}; path=/; max-age=3600; SameSite=Strict`;
-        log.info('Email verified, user logged in automatically', { userId });
-        
-        try {
-          const decoded = jwtDecode(data.token) as DecodedToken;
-          const role = decoded.role;
-          
-          setTimeout(() => {
-            if (role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'ADMIN_STAFF') {
-              router.push('/admin/dashboard');
-            } else if (role === 'CUSTOMER') {
-              router.push('/cliente/dashboard');
-            } else if (role === 'ENERGY_RENTER') {
-              router.push('/locador/dashboard');
-            } else {
-              router.push('/dashboard');
-            }
-          }, 1500);
-        } catch (error) {
-          log.error('Error decoding JWT after email verification', { error });
-          setError('Verificação bem-sucedida, mas erro ao iniciar sessão. Tente fazer login.');
-          setTimeout(() => {
-            router.push('/login');
-          }, 3000);
+      try {
+        log.info('Verifying email with token');
+        const response = await fetch(`/api/auth/verify-email?token=${token}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          log.warn('Email verification failed', { status: response.status });
+          setStatus('error');
+          setMessage(data.message || 'Falha na verificação do email.');
+          return;
         }
-      } else {
-        log.warn('Email verified, but no token received from API', { userId });
-        setError('Verificação bem-sucedida, mas erro ao iniciar sessão. Por favor, tente fazer login.');
+
+        log.info('Email verified successfully');
+        setStatus('success');
+        setMessage('Email verificado com sucesso!');
+        
+        // Redirect to login after successful verification
         setTimeout(() => {
           router.push('/login');
         }, 3000);
+      } catch (err) {
+        log.error('Error during email verification', { 
+          error: err instanceof Error ? err.message : String(err)
+        });
+        setStatus('error');
+        setMessage('Erro ao verificar email. Tente novamente mais tarde.');
       }
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro inesperado.';
-      log.error('Error verifying email', { error: errorMessage });
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
     }
-  };
 
-  const handleResendCode = async () => {
-    if (!userId) {
-      setError('ID do usuário não encontrado. Por favor, retorne à página de registro.');
-      return;
-    }
-    
-    setLoading(true);
-    setError(null);
-    setMessage('Enviando novo código...');
-    
-    try {
-      log.debug('Requesting new verification code', { userId });
-      
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId, type: 'EMAIL_VERIFICATION' }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Falha ao reenviar o código.');
-      }
-      
-      setMessage('Um novo código de verificação foi enviado para seu email.');
-      
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro inesperado.';
-      log.error('Error resending verification code', { error: errorMessage });
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (!userId) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900">Verificação de Email</h2>
-            <p className="mt-2 text-sm text-red-600">
-              Não foi possível identificar seu usuário. Por favor, retorne à página de registro.
-            </p>
-            <div className="mt-4">
-              <Link href="/register" className="text-indigo-600 hover:text-indigo-500">
-                Voltar para o registro
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    verifyEmail();
+  }, [token, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Verificação de Email</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Enviamos um código de verificação para seu email. 
-            Por favor, insira o código abaixo para verificar sua conta.
-          </p>
-        </div>
-        
-        {!verified ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-700">
-                Código de Verificação
-              </label>
-              <input
-                id="code"
-                name="code"
-                type="text"
-                maxLength={6}
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
-                placeholder="Insira o código de 6 dígitos"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                disabled={loading || verified}
-              />
-            </div>
-            
-            {error && (
-              <p className="text-sm text-red-600" role="alert">
-                {error}
-              </p>
-            )}
-            
-            {message && (
-              <p className="text-sm text-green-600" role="status">
-                {message}
-              </p>
-            )}
-            
-            <div className="flex flex-col space-y-4">
-              <button
-                type="submit"
-                disabled={loading || verified || code.length < 6}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Verificando...' : 'Verificar Email'}
-              </button>
+    <div className="flex min-h-[calc(100vh-15rem)] flex-col md:flex-row">
+      {/* Form Column */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex w-full flex-col bg-white/90 p-4 backdrop-blur-sm dark:bg-gray-900/90 md:w-1/2 md:px-8"
+      >
+        <div className="mx-auto flex w-full max-w-md flex-grow flex-col justify-center">
+          <Card className="border-none bg-transparent shadow-none">
+            <CardHeader className="space-y-1 pb-4">
+              <CardTitle className="text-center text-2xl font-bold">Verificação de Email</CardTitle>
+              <CardDescription className="text-center">
+                {status === 'verifying' 
+                  ? 'Verificando seu endereço de email...' 
+                  : status === 'success' 
+                    ? 'Email verificado com sucesso!' 
+                    : 'Falha na verificação'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {status === 'verifying' && (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                  <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                    Verificando seu endereço de email...
+                  </p>
+                </div>
+              )}
               
-              <button
-                type="button"
-                onClick={handleResendCode}
-                disabled={loading || verified}
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Reenviar Código
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-green-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            <p className="mt-2 text-lg font-medium text-gray-900">
-              Email verificado com sucesso!
+              {status === 'success' && (
+                <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950/60 dark:text-green-300">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <AlertDescription>
+                    {message} Você será redirecionado para a página de login em breve.
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              {status === 'error' && (
+                <Alert className="border-red-200 bg-red-50 text-red-800 dark:border-red-900 dark:bg-red-950/60 dark:text-red-300">
+                  <XCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    {message}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="mt-6 text-center">
+                <Button asChild className="w-full">
+                  <Link href="/login">Ir para Login</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>
+              Precisa de ajuda? <Link href="/contato" className="text-primary hover:underline">Entre em contato</Link>
             </p>
-            <p className="mt-1 text-sm text-gray-600">
-              Você será redirecionado para o dashboard em instantes.
-            </p>
-            <div className="mt-4">
-              <Link href="/dashboard" className="text-indigo-600 hover:text-indigo-500">
-                Ir para o Dashboard
-              </Link>
-            </div>
           </div>
-        )}
-      </div>
+        </div>
+      </motion.div>
+      
+      {/* Hero Column - Hidden on mobile */}
+      <HeroColumn />
     </div>
   );
-};
-
-export default VerifyEmailPage; 
+} 

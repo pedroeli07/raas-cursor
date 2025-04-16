@@ -1,8 +1,8 @@
 import { ZodError, ZodSchema } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import log from '../logs/logger';
-import { Role, NotificationStatus, HelpRequestStatus } from '@prisma/client';
-import { getUserFromRequest, isAdmin } from '../utils/utils';
+import { NotificationStatus, HelpRequestStatus } from '@prisma/client';
+import { getUserFromRequest, isAdminOrSuperAdmin, Role } from '../utils/utils';
 import { ErrorResponse } from '../types/types';
 
 /**
@@ -82,7 +82,8 @@ export function validateAdminRights(req: NextRequest): {
 } {
   const { userRole } = getUserFromRequest(req);
 
-  if (!isAdmin(userRole)) {
+  // Check admin rights by role value directly instead of using utility function
+  if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
     log.warn('Authorization failed: Insufficient privileges', { 
       roleAttempted: userRole
     });

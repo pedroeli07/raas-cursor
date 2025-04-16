@@ -1,3 +1,18 @@
 {
-  "type": "module"
-} 
+  "name": "raas-automation-scripts",
+  "version": "1.0.0",
+  "description": "Automation scripts for RaaS Solar",
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.js",
+    "register": "node register-admin.js",
+    "test": "node automated-raas-test.js",
+    "test-profile": "node test-profile-completion.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.51.1",
+    "puppeteer": "^24.6.1"
+  }
+}

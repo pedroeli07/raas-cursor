@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { z } from 'zod';
 
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     log.debug('Validated password reset data');
 
     // Find token in database
-    const resetToken = await db.passwordReset.findFirst({
+    const resetToken = await prisma.passwordReset.findFirst({
       where: {
         token,
         expiresAt: { gt: new Date() }, // Token not expired
@@ -46,13 +46,13 @@ export async function POST(req: NextRequest) {
     log.debug('Password hashed successfully');
 
     // Update user's password
-    await db.user.update({
+    await prisma.user.update({
       where: { id: resetToken.userId },
       data: { password: hashedPassword },
     });
 
     // Mark the token as used
-    await db.passwordReset.update({
+    await prisma.passwordReset.update({
       where: { id: resetToken.id },
       data: { usedAt: new Date() },
     });

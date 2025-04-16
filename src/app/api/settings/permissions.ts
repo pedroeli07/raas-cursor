@@ -3,7 +3,7 @@ import { Role } from '@prisma/client';
 // Definições de permissões para configurações
 export const PERMISSION_LEVELS = {
   // Configurações que somente SUPER_ADMIN podem modificar
-  SUPER_ADMIN_ONLY: [
+  superAdminOnly: [
     'PRIMARY_ADMIN_EMAIL', 
     'PLATFORM_NAME', 
     'PLATFORM_FEE_PERCENTAGE',
@@ -14,7 +14,7 @@ export const PERMISSION_LEVELS = {
   ],
   
   // Configurações que SUPER_ADMIN e ADMIN podem modificar
-  ADMIN_LEVEL: [
+  adminLevel: [
     'DEFAULT_DISCOUNT_RATE',
     'BILLING_DATE',
     'PAYMENT_TERM_DAYS',
@@ -33,7 +33,7 @@ export const PERMISSION_LEVELS = {
   ],
   
   // Configurações que todos os usuários administrativos podem modificar
-  ADMIN_STAFF_LEVEL: [
+  adminStaffLevel: [
     'MAINTENANCE_MODE',
     'MAINTENANCE_MESSAGE',
     'HELP_DESK_MESSAGE',
@@ -43,27 +43,27 @@ export const PERMISSION_LEVELS = {
 };
 
 // Obter o nível de permissão para uma configuração específica
-export function getPermissionLevel(key: string): 'SUPER_ADMIN_ONLY' | 'ADMIN_LEVEL' | 'ADMIN_STAFF_LEVEL' | 'ANY' {
-  if (PERMISSION_LEVELS.SUPER_ADMIN_ONLY.includes(key)) {
-    return 'SUPER_ADMIN_ONLY';
+export function getPermissionLevel(key: string): 'superAdminOnly' | 'adminLevel' | 'adminStaffLevel' | 'ANY' {
+  if (PERMISSION_LEVELS.superAdminOnly.includes(key)) {
+    return 'superAdminOnly';
   }
-  if (PERMISSION_LEVELS.ADMIN_LEVEL.includes(key)) {
-    return 'ADMIN_LEVEL';
+  if (PERMISSION_LEVELS.adminLevel.includes(key)) {
+    return 'adminLevel';
   }
-  if (PERMISSION_LEVELS.ADMIN_STAFF_LEVEL.includes(key)) {
-    return 'ADMIN_STAFF_LEVEL';
+  if (PERMISSION_LEVELS.adminStaffLevel.includes(key)) {
+    return 'adminStaffLevel';
   }
   return 'ANY'; // Padrão para outras configurações
 }
 
 // Verificar se o usuário tem permissão para acessar/modificar uma configuração
-export function hasPermission(userRole: Role, permLevel: 'SUPER_ADMIN_ONLY' | 'ADMIN_LEVEL' | 'ADMIN_STAFF_LEVEL' | 'ANY'): boolean {
+export function hasPermission(userRole: Role, permLevel: 'superAdminOnly' | 'adminLevel' | 'adminStaffLevel' | 'ANY'): boolean {
   switch(permLevel) {
-    case 'SUPER_ADMIN_ONLY':
+    case 'superAdminOnly':
       return userRole === 'SUPER_ADMIN';
-    case 'ADMIN_LEVEL':
+    case 'adminLevel':
       return userRole === 'SUPER_ADMIN' || userRole === 'ADMIN';
-    case 'ADMIN_STAFF_LEVEL':
+    case 'adminStaffLevel':
       return userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' || userRole === 'ADMIN_STAFF';
     case 'ANY':
       return true;

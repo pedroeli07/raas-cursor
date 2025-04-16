@@ -1,0 +1,32 @@
+[
+  {
+    "test": "Número válido (0.85)",
+    "value": "0.85",
+    "formatResult": "R$ 0,85",
+    "isSuccess": true
+  },
+  {
+    "test": "Valor nulo",
+    "value": "null",
+    "formatResult": "R$ 0,00",
+    "isSuccess": true
+  },
+  {
+    "test": "Valor indefinido",
+    "value": "undefined",
+    "formatResult": "R$ 0,00",
+    "isSuccess": true
+  },
+  {
+    "test": "NaN",
+    "value": "NaN",
+    "formatResult": "R$ 0,00",
+    "isSuccess": true
+  },
+  {
+    "test": "String vazia",
+    "value": "",
+    "formatResult": "R$ 0,00",
+    "isSuccess": true
+  }
+]

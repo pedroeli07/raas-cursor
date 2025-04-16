@@ -1,10 +1,12 @@
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import { VerificationType } from '@prisma/client';
-import crypto from 'crypto';
+import * as crypto from 'crypto';
 import { backendLog as log } from '@/lib/logs/logger';
 import { EmailService } from '@/lib/email/emailService';
 import * as fs from 'fs';
 import * as path from 'path';
+import { addMinutes } from 'date-fns';
+import { z } from 'zod';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -32,30 +34,21 @@ function saveVerificationCodes() {
   }
 }
 
-/**
- * Generates a random numeric code with specified length
- */
-export function generateVerificationCode(length: number = 6): string {
-  try {
-    // Generate a more secure random code using crypto
-    const buffer = crypto.randomBytes(length);
-    let code = '';
-    
-    // Convert to numeric code
-    for (let i = 0; i < buffer.length; i++) {
-      // Use modulo 10 to get a digit (0-9)
-      code += (buffer[i] % 10).toString();
-    }
-    
-    return code;
-  } catch (error) {
-    // Fallback to Math.random if crypto fails
-    log.warn('Failed to use crypto for verification code, falling back to Math.random');
-    return Array.from(
-      { length }, 
-      () => Math.floor(Math.random() * 10).toString()
-    ).join('');
-  }
+// Schema for verification code validation
+export const verificationCodeSchema = z.object({
+  code: z.string().min(6).max(6),
+  email: z.string().email(),
+  type: z.enum(['EMAIL_VERIFICATION', 'LOGIN'])
+});
+
+// Generate a random 6-digit code
+export function generateVerificationCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Generate a unique token for password reset or email verification
+export function generateToken(length = 32): string {
+  return crypto.randomBytes(length).toString('hex');
 }
 
 /**
@@ -83,7 +76,7 @@ export async function createAndSendVerificationCode(
     });
     
     // Store the code in the database
-    const verificationCode = await db.verificationCode.create({
+    const verificationCode = await prisma.verificationCode.create({
       data: {
         code,
         userId,
@@ -151,62 +144,65 @@ export function getAllTestVerificationCodes(): Record<string, {code: string, typ
   return VERIFICATION_CODES;
 }
 
-/**
- * Validates a verification code
- */
+// Create a verification code in the database
+export async function createVerificationCode(
+  userId: string, 
+  type: VerificationType,
+  expiresInMinutes = 15
+): Promise<string> {
+  // Generate a random 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  // Calculate expiration time
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + expiresInMinutes);
+  
+  // Save to database
+  await prisma.verificationCode.create({
+    data: {
+      userId,
+      code,
+      type,
+      expiresAt
+    }
+  });
+  
+  log.info('Verification code created', { userId, type, expiresAt });
+  return code;
+}
+
+// Validate a verification code
 export async function validateVerificationCode(
   userId: string,
   code: string,
   type: VerificationType
 ): Promise<boolean> {
   try {
-    log.debug('Validating verification code', { 
-      userId, 
-      code: isDev ? code : '[MASKED]', 
-      type 
-    });
-    
-    // Find the most recent valid code for the user
-    const verificationCode = await db.verificationCode.findFirst({
+    // Find the most recent verification code for this user and type
+    const verification = await prisma.verificationCode.findFirst({
       where: {
         userId,
         code,
         type,
-        expiresAt: { gt: new Date() },
-        usedAt: null,
+        expiresAt: {
+          gt: new Date() // Not expired
+        }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
     
-    if (!verificationCode) {
-      log.warn('Invalid or expired verification code', { 
-        userId, 
-        type,
-        enteredCode: isDev ? code : '[MASKED]'
-      });
+    if (!verification) {
+      log.warn('Invalid or expired verification code', { userId, type });
       return false;
     }
     
-    // Mark the code as used
-    await db.verificationCode.update({
-      where: { id: verificationCode.id },
-      data: { usedAt: new Date() }
+    // Optionally invalidate the code after use
+    await prisma.verificationCode.update({
+      where: { id: verification.id },
+      data: { used: true }
     });
-    
-    log.debug('Verification code marked as used', { 
-      userId, 
-      verificationId: verificationCode.id,
-      type 
-    });
-    
-    // If this is an email verification code, mark the user's email as verified
-    if (type === VerificationType.EMAIL_VERIFICATION) {
-      await db.user.update({
-        where: { id: userId },
-        data: { emailVerified: true }
-      });
-      log.info('User email verified', { userId });
-    }
     
     log.info('Verification code validated successfully', { userId, type });
     return true;

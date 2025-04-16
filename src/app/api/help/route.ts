@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { db, prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { EmailService } from '@/lib/email/emailService';
 import { NotificationService } from '@/lib/notification/notificationService';
-import { createHelpRequestSchema, helpRequestStatusUpdateSchema, helpRequestAssignSchema } from '@/lib/schemas/schemas';
+import { createHelpRequestSchema, helpRequestStatusUpdateSchema, helpRequestAssignSchema } from '../../../lib/schemas/schemas';
 import { getUserFromRequest, isAdmin } from '@/lib/utils/utils';
 import { validateRequestBody, validateAuthentication, createErrorResponse } from '@/lib/validators/validators';
-
+import { Role } from '@prisma/client';
 // GET - List help requests (all for admins, only own for regular users)
 export async function GET(req: NextRequest) {
   log.info('Received request to list help requests');
@@ -26,9 +26,9 @@ export async function GET(req: NextRequest) {
     // Determine which help requests to fetch based on user role
     let helpRequests;
     
-    if (isAdmin(userRole)) {
+    if (isAdmin(userRole as Role)) {
       // Admins can see all help requests
-      helpRequests = await db.helpRequest.findMany({
+      helpRequests = await prisma.helpRequest.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
           user: {
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
       log.info('Retrieved all help requests for admin', { userId: userIdSafe, count: helpRequests.length });
     } else {
       // Regular users can only see their own requests
-      helpRequests = await db.helpRequest.findMany({
+      helpRequests = await prisma.helpRequest.findMany({
         where: { userId: userIdSafe }, // Usando userId como string garantida
         orderBy: { createdAt: 'desc' },
         include: {
@@ -122,13 +122,13 @@ export async function POST(req: NextRequest) {
     const { title, message } = validation.data;
     
     // Get user name
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userIdSafe },
       select: { name: true }
     });
 
     // Create help request
-    const helpRequest = await db.helpRequest.create({
+    const helpRequest = await prisma.helpRequest.create({
       data: {
         userId: userIdSafe,
         title,
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Send email notification to support
-    const contactInfo = await db.contact.findFirst({
+    const contactInfo = await prisma.contact.findFirst({
       where: { users: { some: { id: userIdSafe } } }
     });
     
@@ -198,12 +198,12 @@ export async function PUT(req: NextRequest) {
       const { helpRequestId } = validation.data;
       
       // Only admins can assign requests
-      if (!isAdmin(userRole)) {
+      if (!isAdmin(userRole as Role)) {
         log.warn('Non-admin attempted to assign help request', { userId: userIdSafe, userRole });
         return createErrorResponse('Forbidden: Admin privileges required', 403);
       }
 
-      const helpRequest = await db.helpRequest.update({
+      const helpRequest = await prisma.helpRequest.update({
         where: { id: helpRequestId },
         data: {
           adminId: userIdSafe,
@@ -232,7 +232,7 @@ export async function PUT(req: NextRequest) {
       
       const { helpRequestId, status } = validation.data;
       
-      const helpRequest = await db.helpRequest.findUnique({
+      const helpRequest = await prisma.helpRequest.findUnique({
         where: { id: helpRequestId }
       });
 
@@ -242,7 +242,7 @@ export async function PUT(req: NextRequest) {
       }
 
       // Verify permission to update
-      const isUserAdmin = isAdmin(userRole);
+      const isUserAdmin = isAdmin(userRole as Role);
       const isOwner = helpRequest.userId === userIdSafe;
       const isAssignedAdmin = helpRequest.adminId === userIdSafe;
 
@@ -260,7 +260,7 @@ export async function PUT(req: NextRequest) {
         return createErrorResponse('Only admins can mark requests as resolved', 403);
       }
 
-      const updatedHelpRequest = await db.helpRequest.update({
+        const updatedHelpRequest = await prisma.helpRequest.update({
         where: { id: helpRequestId },
         data: { status }
       });

@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-04-10T15:21:33.619Z",
+  "context": "fatal",
+  "message": "Falha no login, abortando testes",
+  "stack": "Error: Falha no login, abortando testes\n    at monitorApp (file:///C:/raas-cursor/scripts/monitor-app.js:561:13)"
+}

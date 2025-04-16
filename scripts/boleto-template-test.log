@@ -1,0 +1,467 @@
+[2025-04-14T18:12:34.017Z] Iniciando teste do template de boleto
+[2025-04-14T18:12:36.796Z] Navegador aberto com sucesso
+[2025-04-14T18:12:36.798Z] Navegando para página de geração de boletos
+[2025-04-14T18:12:54.235Z] Browser Console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[2025-04-14T18:12:56.903Z] Browser Console: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2025-04-14T18:12:57.024Z] Browser Console: [HMR] connected
+[2025-04-14T18:12:57.062Z] Browser Console: ./src/lib/utils/energy-data-processor.ts
+Attempted import error: '@/lib/utils/logger' does not contain a default export (imported as 'log').
+[2025-04-14T18:12:57.176Z] Browser Console: ./src/lib/utils/energy-data-processor.ts
+Attempted import error: '@/lib/utils/logger' does not contain a default export (imported as 'log').
+[2025-04-14T18:12:57.189Z] Browser Console: ./src/lib/utils/energy-data-processor.ts
+Attempted import error: '@/lib/utils/logger' does not contain a default export (imported as 'log').
+[2025-04-14T18:12:57.200Z] Browser Console: ./src/lib/utils/energy-data-processor.ts
+Attempted import error: '@/lib/utils/logger' does not contain a default export (imported as 'log').
+[2025-04-14T18:12:57.210Z] Browser Console: ./src/lib/utils/energy-data-processor.ts
+Attempted import error: '@/lib/utils/logger' does not contain a default export (imported as 'log').
+[2025-04-14T18:12:57.243Z] Browser Console: There were more warnings in other files.
+You can find a complete log in the terminal.
+[2025-04-14T18:12:57.274Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:12:57.360Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:02.000Z] Tirando screenshot da página inicial
+[2025-04-14T18:13:02.375Z] Selecionando cliente
+[2025-04-14T18:13:02.459Z] Mantendo o navegador aberto por 10 segundos para visualização final
+[2025-04-14T18:13:03.509Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:03.995Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.049Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.160Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.211Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.410Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.477Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.587Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.750Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.850Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:04.934Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.045Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.131Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.258Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.347Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.451Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.520Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.662Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.822Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:05.934Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.007Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.154Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.203Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.315Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.384Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.492Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.566Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.679Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.740Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.856Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:06.925Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.038Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.121Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.230Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.316Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.441Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.509Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.627Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.709Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.819Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:07.905Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:08.048Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:08.096Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:08.203Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:08.267Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:08.376Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:08.865Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:09.000Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:09.072Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:09.178Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:09.305Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:09.406Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:09.464Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.021Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.080Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.208Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.276Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.398Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.465Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.587Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.651Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.772Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.837Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:10.953Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.011Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.178Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.236Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.363Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.436Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.557Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.630Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:11.774Z] Browser Console: [HMR] Invalid message: {"action":"isrManifest","data":{"/":true,"/admin/dashboard":true,"/admin/financeiro/faturas":true,"/admin/financeiro/faturas/previa":true,"/coin.svg":true,"/leaf.svg":true,"/login":true,"/_next/static/css/app/layout.css":true}}
+TypeError: Cannot read properties of undefined (reading '__N_SSP')
+    at handleStaticIndicator (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:229:124)
+    at processMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:244:17)
+    at eval (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:70:13)
+    at WebSocket.handleMessage (webpack-internal:///(pages-dir-browser)/./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:65:17)
+[2025-04-14T18:13:12.480Z] Teste concluído com sucesso
+[2025-04-14T18:13:13.542Z] Navegador fechado

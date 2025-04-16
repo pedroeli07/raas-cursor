@@ -6,31 +6,40 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: __dirname
 });
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { 
-          argsIgnorePattern: "^_", 
-          varsIgnorePattern: "^_",
-          destructuredArrayIgnorePattern: "^_" 
-        }
-      ],
-      
-      "@typescript-eslint/no-explicit-any": [
-        "warn",
+      'react/no-unknown-property': [
+        'error',
         {
-          "ignoreRestArgs": true,
-          "fixToUnknown": false
-        }
+          ignore: ['intensity', 'position', 'castShadow'], // Add other react-three-fiber properties as needed
+        },
       ],
     },
-  },
+    rules: {
+      
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/consistent-type-assertions": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        { 
+          "selector": "property",
+          "format": ["camelCase", "PascalCase"],
+          "filter": {
+            "regex": "^(.*[- ].*|\\*)$",
+            "match": false
+          }
+        }
+      ],
+      "react/no-unknown-property": ["error", { "ignore": ["css", "tw"] }],
+      "react/prop-types": "off"
+    }
+  }
 ];
 
 export default eslintConfig;

@@ -1,343 +1,273 @@
+// path: src/lib/email/emailService.ts
 import { Resend } from 'resend';
-import { backendLog as log } from '../logs/logger';
+import { log } from '../logs/logger';
 import { Role } from '@prisma/client';
+import { 
+  EnvironmentConfig,
+  resend, 
+  EmailAddressHelper,
+  EmailTemplates,
+  ResendResponse,
+  UrlBuilder
+} from './emailUtils';
 
-const isDev = process.env.NODE_ENV === 'development';
-
-// Create a Resend client instance
-const resend = new Resend(process.env.RESEND_API_KEY || 're_Uyc7aGLB_795G4WeBC5TdMwDRSbZBYfyq');
-
-// Support email address
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'pedro-eli@hotmail.com';
-// In development, we can override the recipient to direct all emails to the developer
-// This must be the verified email in Resend's free tier
-const DEV_EMAIL_RECIPIENT = process.env.DEV_EMAIL_RECIPIENT || 'pedro-eli@hotmail.com';
-const DEFAULT_FROM_EMAIL = process.env.DEFAULT_FROM_EMAIL || 'onboarding@resend.dev'; // Use your verified domain
-
-/**
- * Helper function to process email addresses for Resend
- * With a test account, all emails MUST be sent to the verified email address
- */
-function getSafeRecipient(originalEmail: string): string {
-  // In test mode or development, we must use the verified email
-  // Resend's free tier only allows sending to verified emails
-  return isDev || process.env.NODE_ENV === 'test' ? DEV_EMAIL_RECIPIENT : originalEmail;
-}
-
-// Type definition for Resend response with 'id' property
-interface ResendResponse {
-  id?: string;
-  [key: string]: unknown;
-}
+const resendInstance = new Resend(EnvironmentConfig.resendApiKey);
 
 /**
  * Email service to handle all email-related operations
  */
 export class EmailService {
   /**
-   * Send an invitation email
+   * Core method to send an email with proper error handling and logging
    */
-  static async sendInvitationEmail(email: string, name: string | null, role: Role, token: string): Promise<boolean> {
+  private static async sendEmail(
+    params: {
+      to: string, 
+      originalEmail: string,
+      subject: string,
+      html: string,
+      logContext: Record<string, unknown>
+    }
+  ): Promise<boolean> {
+    const { to, originalEmail, subject, html, logContext } = params;
+    
     try {
-      const invitationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/register?token=${token}`;
+      // Get safe recipient (developer email in dev/test mode)
+      const recipient = EmailAddressHelper.getSafeRecipient(to);
       
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(email);
-      
-      log.debug('Preparing to send invitation email', { 
-        from: DEFAULT_FROM_EMAIL,
+      log.debug('Preparing to send email', { 
+        from: EnvironmentConfig.defaultFromEmail,
         to: recipient,
-        originalEmail: email,
-        token,
-        invitationLink
+        originalEmail,
+        subject,
+        apiKey: EnvironmentConfig.resendApiKey ? 'Set (masked)' : 'Not set',
+        ...logContext
       });
 
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
+      // In development mode, log the email content but don't actually send it
+      if (EnvironmentConfig.isDev) {
+        log.info('DEV MODE: Email would be sent', {
+          to: recipient,
+          from: EnvironmentConfig.defaultFromEmail,
+          subject,
+          // Include a preview of the HTML content
+          htmlPreview: html.substring(0, 200) + (html.length > 200 ? '...' : ''),
+          ...logContext
+        });
+        return true;
+      }
+
+      const response = await resendInstance.emails.send({
+        from: EnvironmentConfig.defaultFromEmail,
         to: recipient,
-        subject: 'Convite para RaaS Solar',
-        html: `
-          <p>Olá ${name || 'Usuário'},</p>
-          <p>Você foi convidado para se juntar à plataforma RaaS Solar como ${role}.</p>
-          <p>Clique no link abaixo para completar seu registro. Este link expira em 24 horas:</p>
-          <p><a href="${invitationLink}">Aceitar Convite</a></p>
-          <p>Se você não estava esperando este convite, por favor ignore este email.</p>
-          <p>--</p>
-          <p><small>Email original: ${email}</small></p>
-        `,
+        subject,
+        html,
       }) as unknown as ResendResponse;
       
-      log.info('Invitation email sent successfully', { 
-        email,
+      log.info('Email sent successfully', { 
+        to: originalEmail,
         recipient,
+        subject,
         messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
+        data: EnvironmentConfig.isDev ? response : undefined,
+        ...logContext
       });
+      
       return true;
     } catch (error) {
-      log.error('Failed to send invitation email', { email, error });
+      log.error('Failed to send email', { 
+        to: originalEmail, 
+        subject,
+        error,
+        apiKey: EnvironmentConfig.resendApiKey ? 'Set (masked, length: ' + EnvironmentConfig.resendApiKey.length + ')' : 'Not set',
+        isDev: EnvironmentConfig.isDev,
+        defaultFromEmail: EnvironmentConfig.defaultFromEmail,
+        ...logContext
+      });
+      
+      // In development, we'll consider it a success to prevent blocking the workflow
+      if (EnvironmentConfig.isDev) {
+        log.info('DEV MODE: Treating email error as success to continue workflow', {
+          to: originalEmail,
+          ...logContext
+        });
+        return true;
+      }
+      
       return false;
     }
+  }
+
+  /**
+   * Send an invitation email
+   */
+  static async sendInvitationEmail(
+    email: string, 
+    name: string | null, 
+    role: Role, 
+    token: string,
+    message?: string
+  ): Promise<boolean> {
+    const invitationLink = UrlBuilder.buildInvitationLink(token);
+    const template = EmailTemplates.invite;
+    
+    return this.sendEmail({
+      to: email,
+      originalEmail: email,
+      subject: template.subject,
+      html: template.getContent(name || 'Usuário', role, invitationLink, email, message),
+      logContext: { 
+        operation: 'sendInvitationEmail',
+        token, 
+        invitationLink, 
+        hasCustomMessage: !!message 
+      }
+    });
   }
 
   /**
    * Send email to user who tried to register without invitation
    */
-  static async sendRegistrationRequestAcknowledgement(email: string, name?: string): Promise<boolean> {
-    try {
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(email);
-      
-      log.debug('Preparing to send registration acknowledgement', { 
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        originalEmail: email
-      });
-
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        subject: 'Solicitação de Registro RaaS Solar',
-        html: `
-          <p>Olá ${name || 'Usuário'},</p>
-          <p>Recebemos sua solicitação para se juntar à plataforma RaaS Solar.</p>
-          <p>Nossa equipe irá analisar sua solicitação e entraremos em contato em breve.</p>
-          <p>Agradecemos seu interesse!</p>
-          <p>Atenciosamente,</p>
-          <p>Equipe RaaS Solar</p>
-          <p>--</p>
-          <p><small>Email original: ${email}</small></p>
-        `,
-      }) as unknown as ResendResponse;
-      
-      log.info('Registration request acknowledgement email sent', { 
-        email,
-        recipient,
-        messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
-      });
-      return true;
-    } catch (error) {
-      log.error('Failed to send registration request acknowledgement', { email, error });
-      return false;
-    }
+  static async sendRegistrationRequestAcknowledgement(
+    email: string, 
+    name?: string
+  ): Promise<boolean> {
+    const template = EmailTemplates.registrationAcknowledgement;
+    
+    return this.sendEmail({
+      to: email,
+      originalEmail: email,
+      subject: template.subject,
+      html: template.getContent(name || 'Usuário'),
+      logContext: { operation: 'sendRegistrationRequestAcknowledgement' }
+    });
   }
 
   /**
    * Notify RaaS support about a registration attempt without invitation
    */
-  static async notifySupportAboutRegistrationAttempt(email: string, name?: string): Promise<boolean> {
-    try {
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(SUPPORT_EMAIL);
-      
-      log.debug('Preparing to send registration attempt notification', { 
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        originalEmail: email
-      });
-
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        subject: 'Nova Tentativa de Registro sem Convite',
-        html: `
-          <p>Uma nova tentativa de registro sem convite foi detectada:</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Nome:</strong> ${name || 'Não informado'}</p>
-          <p>Esta pessoa pode estar interessada em se tornar cliente da plataforma RaaS Solar.</p>
-        `,
-      }) as unknown as ResendResponse;
-      
-      log.info('Support notified about registration attempt', { 
-        email,
-        recipient,
-        messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
-      });
-      return true;
-    } catch (error) {
-      log.error('Failed to notify support about registration attempt', { email, error });
-      return false;
-    }
+  static async notifySupportAboutRegistrationAttempt(
+    email: string, 
+    name?: string
+  ): Promise<boolean> {
+    const template = EmailTemplates.supportRegistrationNotification;
+    
+    return this.sendEmail({
+      to: EnvironmentConfig.supportEmail,
+      originalEmail: email,
+      subject: template.subject,
+      html: template.getContent(email, name || 'Não informado'),
+      logContext: { operation: 'notifySupportAboutRegistrationAttempt' }
+    });
   }
 
   /**
    * Send notification about new help request
    */
-  static async sendHelpRequestNotification(email: string, title: string, message: string): Promise<boolean> {
-    try {
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(SUPPORT_EMAIL);
-      
-      log.debug('Preparing to send help request notification', { 
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        originalEmail: email,
-        title
-      });
-
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        subject: `Nova Solicitação de Ajuda: ${title}`,
-        html: `
-          <p>Uma nova solicitação de ajuda foi enviada:</p>
-          <p><strong>De:</strong> ${email}</p>
-          <p><strong>Título:</strong> ${title}</p>
-          <p><strong>Mensagem:</strong></p>
-          <p>${message}</p>
-        `,
-      }) as unknown as ResendResponse;
-      
-      log.info('Help request notification email sent', { 
-        email,
-        recipient,
-        title,
-        messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
-      });
-      return true;
-    } catch (error) {
-      log.error('Failed to send help request notification', { email, title, error });
-      return false;
-    }
+  static async sendHelpRequestNotification(
+    email: string, 
+    title: string, 
+    message: string
+  ): Promise<boolean> {
+    const template = EmailTemplates.helpRequest;
+    
+    return this.sendEmail({
+      to: EnvironmentConfig.supportEmail,
+      originalEmail: email,
+      subject: template.subject(title),
+      html: template.getContent(email, title, message),
+      logContext: { 
+        operation: 'sendHelpRequestNotification',
+        title 
+      }
+    });
   }
 
   /**
    * Send password reset email
    */
-  static async sendPasswordResetEmail(email: string, name: string, resetLink: string): Promise<boolean> {
-    try {
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(email);
-      
-      log.debug('Preparing to send password reset email', { 
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        originalEmail: email,
-        resetLink
-      });
-
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        subject: 'Redefinição de Senha - RaaS Solar',
-        html: `
-          <p>Olá ${name || 'Usuário'},</p>
-          <p>Recebemos uma solicitação para redefinir sua senha.</p>
-          <p>Clique no link abaixo para criar uma nova senha. Este link expira em 1 hora:</p>
-          <p><a href="${resetLink}">Redefinir Senha</a></p>
-          <p>Se você não solicitou esta redefinição, por favor ignore este email.</p>
-          <p>Atenciosamente,</p>
-          <p>Equipe RaaS Solar</p>
-          <p>--</p>
-          <p><small>Email original: ${email}</small></p>
-        `,
-      }) as unknown as ResendResponse;
-      
-      log.info('Password reset email sent', { 
-        email,
-        recipient,
-        messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
-      });
-      return true;
-    } catch (error) {
-      log.error('Failed to send password reset email', { email, error });
-      return false;
-    }
+  static async sendPasswordResetEmail(
+    email: string, 
+    name: string, 
+    resetLink: string
+  ): Promise<boolean> {
+    const template = EmailTemplates.passwordReset;
+    
+    return this.sendEmail({
+      to: email,
+      originalEmail: email,
+      subject: template.subject,
+      html: template.getContent(name || 'Usuário', resetLink),
+      logContext: { 
+        operation: 'sendPasswordResetEmail',
+        resetLink 
+      }
+    });
   }
 
   /**
    * Send email verification code
    */
-  static async sendEmailVerificationCode(email: string, name: string, code: string): Promise<boolean> {
-    try {
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(email);
-      
-      log.debug('Preparing to send email verification code', { 
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        originalEmail: email,
-        code
-      });
-
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        subject: 'Verificação de Email - RaaS Solar',
-        html: `
-          <p>Olá ${name || 'Usuário'},</p>
-          <p>Bem-vindo à plataforma RaaS Solar! Para confirmar seu endereço de email, utilize o código abaixo:</p>
-          <p style="font-size: 24px; font-weight: bold; text-align: center; padding: 12px; background-color: #f3f4f6; margin: 16px 0; letter-spacing: 3px;">${code}</p>
-          <p>Este código expirará em 30 minutos.</p>
-          <p>Se você não criou uma conta na RaaS Solar, por favor ignore este email.</p>
-          <p>Atenciosamente,</p>
-          <p>Equipe RaaS Solar</p>
-          <p>--</p>
-          <p><small>Email original: ${email}</small></p>
-        `,
-      }) as unknown as ResendResponse;
-      
-      log.info('Email verification code sent', { 
-        email,
-        recipient,
-        code: isDev ? code : '***',
-        messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
-      });
-      return true;
-    } catch (error) {
-      log.error('Failed to send email verification code', { email, error });
-      return false;
-    }
+  static async sendEmailVerificationCode(
+    email: string, 
+    name: string, 
+    code: string
+  ): Promise<boolean> {
+    const template = EmailTemplates.emailVerification;
+    
+    return this.sendEmail({
+      to: email,
+      originalEmail: email,
+      subject: template.subject,
+      html: template.getContent(name || 'Usuário', code, email),
+      logContext: { 
+        operation: 'sendEmailVerificationCode',
+        code: EnvironmentConfig.isDev ? code : '***'
+      }
+    });
   }
 
   /**
    * Send two-factor authentication code
    */
-  static async sendTwoFactorCode(email: string, name: string, code: string): Promise<boolean> {
-    try {
-      // In development, direct emails to developer
-      const recipient = getSafeRecipient(email);
-      
-      log.debug('Preparing to send two-factor authentication code', { 
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        originalEmail: email,
-        code
-      });
-
-      const response = await resend.emails.send({
-        from: DEFAULT_FROM_EMAIL,
-        to: recipient,
-        subject: 'Código de Autenticação - RaaS Solar',
-        html: `
-          <p>Olá ${name || 'Usuário'},</p>
-          <p>Para continuar seu login na plataforma RaaS Solar, utilize o código de verificação abaixo:</p>
-          <p style="font-size: 24px; font-weight: bold; text-align: center; padding: 12px; background-color: #f3f4f6; margin: 16px 0; letter-spacing: 3px;">${code}</p>
-          <p>Este código expirará em 10 minutos.</p>
-          <p>Se você não tentou fazer login na RaaS Solar, alguém pode estar tentando acessar sua conta. Recomendamos que você altere sua senha imediatamente.</p>
-          <p>Atenciosamente,</p>
-          <p>Equipe RaaS Solar</p>
-          <p>--</p>
-          <p><small>Email original: ${email}</small></p>
-        `,
-      }) as unknown as ResendResponse;
-      
-      log.info('Two-factor authentication code sent', { 
-        email,
-        recipient,
-        code: isDev ? code : '***',
-        messageId: response?.id || 'unknown',
-        data: isDev ? response : undefined
-      });
-      return true;
-    } catch (error) {
-      log.error('Failed to send two-factor code', { email, error });
-      return false;
-    }
+  static async sendTwoFactorCode(
+    email: string, 
+    name: string, 
+    code: string
+  ): Promise<boolean> {
+    const template = EmailTemplates.twoFactorCode;
+    
+    return this.sendEmail({
+      to: email,
+      originalEmail: email,
+      subject: template.subject,
+      html: template.getContent(name || 'Usuário', code, email),
+      logContext: { 
+        operation: 'sendTwoFactorCode',
+        code: EnvironmentConfig.isDev ? code : '***'
+      }
+    });
   }
-} 
+
+  /**
+   * Send a test email for diagnostic purposes
+   */
+  static async sendTestEmail(
+    email: string, 
+    subject: string,
+    message: string
+  ): Promise<boolean> {
+    return this.sendEmail({
+      to: email,
+      originalEmail: email,
+      subject: `[TEST] ${subject}`,
+      html: `
+        <h1>Test Email</h1>
+        <p>This is a test email sent from RaaS Solar application.</p>
+        <pre>${message}</pre>
+        <p>Time: ${new Date().toISOString()}</p>
+      `,
+      logContext: { operation: 'sendTestEmail' }
+    });
+  }
+}

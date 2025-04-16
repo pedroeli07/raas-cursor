@@ -1,213 +1,97 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
+import { useSearchParams } from 'next/navigation';
+import { frontendLog as log } from '@/lib/logs/logger';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import log from '@/lib/logs/logger';
+import { AuthForm } from '@/app/(main)/(auth)/auth-form';
+import { HeroColumn } from '@/components/auth/hero-components';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function ResetPasswordPage() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [isTokenValid, setIsTokenValid] = useState<boolean | null>(null);
-  const [tokenChecking, setTokenChecking] = useState(true);
-
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const email = searchParams.get('email');
 
-  // Validate token on page load
-  useEffect(() => {
-    async function validateToken() {
-      if (!token) {
-        log.warn('[FRONTEND] Reset password attempted without token');
-        setIsTokenValid(false);
-        setError('Token de redefinição não encontrado.');
-        setTokenChecking(false);
-        return;
-      }
+  log.info('Reset password page rendered', { 
+    hasToken: !!token,
+    hasEmail: !!email
+  });
 
-      try {
-        log.debug('[FRONTEND] Validating reset password token');
-        const response = await fetch(`/api/auth/validate-token?token=${token}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          log.warn('[FRONTEND] Reset token validation failed', { status: response.status });
-          setIsTokenValid(false);
-          setError(data.message || 'Token inválido ou expirado.');
-        } else {
-          log.info('[FRONTEND] Reset token validation successful');
-          setIsTokenValid(true);
-        }
-      } catch (err: unknown) {
-        log.error('[FRONTEND] Error validating reset token', { 
-          error: err instanceof Error ? err.message : String(err) 
-        });
-        setIsTokenValid(false);
-        setError('Não foi possível validar o token. Tente novamente mais tarde.');
-      } finally {
-        setTokenChecking(false);
-      }
-    }
-
-    validateToken();
-  }, [token]);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
-    setMessage(null);
-
-    // Validate passwords
-    if (password !== confirmPassword) {
-      setError('As senhas não coincidem.');
-      return;
-    }
-
-    if (password.length < 8) {
-      setError('A senha deve ter pelo menos 8 caracteres.');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      log.debug('[FRONTEND] Submitting password reset');
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        log.error('[FRONTEND] Password reset failed', { 
-          status: response.status, 
-          message: data.message 
-        });
-        throw new Error(data.message || 'Falha ao redefinir a senha.');
-      }
-
-      log.info('[FRONTEND] Password reset successful');
-      setMessage('Sua senha foi redefinida com sucesso. Você será redirecionado para a página de login.');
-      
-      // Redirect to login after a short delay
-      setTimeout(() => {
-        router.push('/login');
-      }, 3000);
-
-    } catch (err: unknown) {
-      log.error('[FRONTEND] Error during password reset', { 
-        error: err instanceof Error ? err.message : String(err) 
-      });
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro inesperado.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Show loading state
-  if (tokenChecking) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <div className="text-center">
-            <p className="text-gray-600">Verificando token de redefinição...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show error if token is invalid
-  if (!isTokenValid) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-          <div className="text-center">
-            <svg 
-              className="mx-auto h-12 w-12 text-red-500" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
-              />
-            </svg>
-            <h2 className="mt-2 text-xl font-semibold text-gray-900">Link Inválido</h2>
-            <p className="mt-2 text-gray-600">{error || 'O link de redefinição de senha é inválido ou expirou.'}</p>
-            <div className="mt-6">
-              <Link 
-                href="/forgot-password"
-                className="text-indigo-600 hover:text-indigo-500"
-              >
-                Solicitar um novo link
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Main form for valid token
+  // If we have a token, we'll implement the actual reset password UI later
+  // For now, show a message saying to check email for a reset link
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">Redefinir Senha</h2>
-        <p className="text-center text-sm text-gray-600">
-          Digite sua nova senha abaixo.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Nova Senha</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirmar Nova Senha</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
+    <div className="flex min-h-[calc(100vh-15rem)] flex-col md:flex-row">
+      {/* Form Column */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex w-full flex-col bg-white/90 p-4 backdrop-blur-sm dark:bg-gray-900/90 md:w-1/2 md:px-8"
+      >
+        <div className="mx-auto flex w-full max-w-md flex-grow flex-col justify-center">
+          {token ? (
+            <Card className="border-none bg-transparent shadow-none">
+              <CardHeader className="space-y-1 pb-4">
+                <CardTitle className="text-center text-2xl font-bold">Redefinir Senha</CardTitle>
+                <CardDescription className="text-center">
+                  Defina uma nova senha para sua conta
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950/60 dark:text-green-300">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <AlertDescription>
+                    Esta funcionalidade está em desenvolvimento. Por favor, use a opção "Esqueci Senha" na página de login.
+                  </AlertDescription>
+                </Alert>
+                <div className="mt-6 text-center">
+                  <Button asChild className="w-full">
+                    <Link href="/login">Voltar para Login</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <Card className="border-none bg-transparent shadow-none">
+                <CardHeader className="space-y-1 pb-4">
+                  <CardTitle className="text-center text-2xl font-bold">Link Enviado</CardTitle>
+                  <CardDescription className="text-center">
+                    Verifique seu email para redefinir sua senha
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-900 dark:bg-green-950/60 dark:text-green-300">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <AlertDescription>
+                      Enviamos um link de redefinição de senha para o seu email. Por favor, verifique sua caixa de entrada e siga as instruções para redefinir sua senha.
+                    </AlertDescription>
+                  </Alert>
+                  <div className="mt-6 text-center">
+                    <Button asChild className="w-full">
+                      <Link href="/login">Voltar para Login</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
           )}
-          {message && (
-            <p className="text-sm text-green-600">{message}</p>
-          )}
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              {loading ? 'Processando...' : 'Redefinir Senha'}
-            </button>
+          
+          <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>
+              Precisa de ajuda? <Link href="/contato" className="text-primary hover:underline">Entre em contato</Link>
+            </p>
           </div>
-        </form>
-      </div>
+        </div>
+      </motion.div>
+      
+      {/* Hero Column - Hidden on mobile */}
+      <HeroColumn />
     </div>
   );
 } 

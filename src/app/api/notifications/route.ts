@@ -1,116 +1,170 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
-import { NotificationStatus } from '@prisma/client';
-import { NotificationService } from '@/lib/notification/notificationService';
+import { getUserFromRequest } from '@/lib/utils/utils';
+import { NotificationStatus, NotificationType } from '@prisma/client';
+import { z } from 'zod';
+import { validateRequestBody, validateAuthentication, createErrorResponse } from '@/lib/validators/validators';
 
-// Helper function to get user ID from request headers set by middleware
-function getUserIdFromRequest(req: NextRequest): string | null {
-  return req.headers.get('x-user-id');
-}
+// Schema for creating a notification
+const createNotificationSchema = z.object({
+  title: z.string().min(1, { message: 'Título é obrigatório' }),
+  message: z.string().min(1, { message: 'Mensagem é obrigatória' }),
+  type: z.enum([NotificationType.SYSTEM, NotificationType.HELP], { 
+    errorMap: () => ({ message: 'Tipo de notificação inválido' }) 
+  }),
+  userId: z.string().optional(), // Optional - will use authenticated user if not provided
+  relatedId: z.string().optional(),
+});
+
+// Schema for updating notification status
+const updateStatusSchema = z.object({
+  ids: z.array(z.string()).min(1, { message: 'Pelo menos um ID é obrigatório' }),
+  status: z.enum([NotificationStatus.READ, NotificationStatus.UNREAD, NotificationStatus.ARCHIVED], {
+    errorMap: () => ({ message: 'Status inválido' })
+  }),
+});
 
 // GET - Get notifications for the authenticated user
 export async function GET(req: NextRequest) {
   log.info('Received request to fetch user notifications');
-
-  const userId = getUserIdFromRequest(req);
-  if (!userId) {
-    log.warn('Unauthorized attempt to fetch notifications', { message: 'No user ID in request' });
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  
+  const authCheck = validateAuthentication(req);
+  if (!authCheck.isAuthenticated) {
+    return authCheck.errorResponse;
   }
-
-  // Get the status filter from URL query parameters, if provided
-  const { searchParams } = new URL(req.url);
-  const status = searchParams.get('status') as NotificationStatus | null;
-
+  
   try {
-    // Get notifications for the user
-    const notifications = await NotificationService.getUserNotifications(
-      userId, 
-      status || undefined
-    );
-
-    log.info('Fetched user notifications', { userId, count: notifications.length });
-    return NextResponse.json({ notifications });
-  } catch (error) {
-    log.error('Error fetching notifications', { error });
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    const { userId } = getUserFromRequest(req);
+    
+    // Get query parameters
+    const url = new URL(req.url);
+    const statusParam = url.searchParams.get('status');
+    
+    // Convert the status string to NotificationStatus enum or undefined
+    let status: NotificationStatus | undefined = undefined;
+    if (statusParam && Object.values(NotificationStatus).includes(statusParam as NotificationStatus)) {
+      status = statusParam as NotificationStatus;
+    }
+    
+    // Get user notifications from database
+    const notifications = await prisma.notification.findMany({
+      where: {
+        userId: userId as string,
+        ...(status ? { status } : {})
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+    
+    return NextResponse.json({ success: true, notifications });
+  } catch (error: any) {
+    log.error('Error fetching notifications', { error: error?.message || 'Unknown error' });
+    return createErrorResponse('Falha ao buscar notificações', 500);
   }
 }
 
-// PUT - Update notification status (mark as read, archive)
-export async function PUT(req: NextRequest) {
-  log.info('Received request to update notification');
-
-  const userId = getUserIdFromRequest(req);
-  if (!userId) {
-    log.warn('Unauthorized attempt to update notification', { message: 'No user ID in request' });
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+// POST - Create a new notification
+export async function POST(req: NextRequest) {
+  log.info('Received request to create notification');
+  
+  const authCheck = validateAuthentication(req);
+  if (!authCheck.isAuthenticated) {
+    return authCheck.errorResponse;
   }
+  
+  // Validate request body
+  const validation = await validateRequestBody(
+    req,
+    createNotificationSchema,
+    'Notification creation validation'
+  );
 
+  if (!validation.success) {
+    return validation.error;
+  }
+  
   try {
-    const body = await req.json();
+    const { userId: adminId } = getUserFromRequest(req);
+    const data = validation.data;
     
-    // Check for required fields
-    if (!body.notificationId) {
-      log.warn('Missing notificationId in request body');
-      return NextResponse.json({ message: 'Missing notificationId' }, { status: 400 });
-    }
-
-    // Identify the operation (markAsRead, archive)
-    if (body.operation === 'markAsRead') {
-      const notification = await NotificationService.markAsRead(body.notificationId, userId);
-      
-      if (!notification) {
-        return NextResponse.json({ message: 'Notification not found or access denied' }, { status: 404 });
+    // Create notification
+    const notification = await prisma.notification.create({
+      data: {
+        title: data.title,
+        message: data.message,
+        type: data.type,
+        userId: data.userId || adminId as string,
+        relatedId: data.relatedId,
       }
+    });
+    
+    log.info('Notification created successfully', { 
+      notificationId: notification.id,
+      userId: data.userId || adminId 
+    });
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Notificação criada com sucesso',
+      notification 
+    }, { status: 201 });
+  } catch (error: any) {
+    log.error('Error creating notification', { error: error?.message || 'Unknown error' });
+    return createErrorResponse('Falha ao criar notificação', 500);
+  }
+}
 
-      return NextResponse.json({ 
-        message: 'Notification marked as read',
-        notification 
-      });
-    } 
-    // Archive operation
-    else if (body.operation === 'archive') {
-      // Find the notification
-      const notification = await db.notification.findUnique({
-        where: { id: body.notificationId }
-      });
+// PATCH - Mark notifications as read or archived
+export async function PATCH(req: NextRequest) {
+  log.info('Received request to update notification status');
+  
+  const authCheck = validateAuthentication(req);
+  if (!authCheck.isAuthenticated) {
+    return authCheck.errorResponse;
+  }
+  
+  // Validate request body
+  const validation = await validateRequestBody(
+    req,
+    updateStatusSchema,
+    'Notification status update validation'
+  );
 
-      if (!notification) {
-        log.warn('Notification not found', { notificationId: body.notificationId });
-        return NextResponse.json({ message: 'Notification not found' }, { status: 404 });
+  if (!validation.success) {
+    return validation.error;
+  }
+  
+  try {
+    const { userId } = getUserFromRequest(req);
+    const { ids, status } = validation.data;
+    
+    // Update notifications
+    const result = await prisma.notification.updateMany({
+      where: {
+        id: { in: ids },
+        userId: userId as string
+      },
+      data: {
+        status,
+        ...(status === NotificationStatus.READ ? { readAt: new Date() } : {})
       }
-
-      // Verify it belongs to the user
-      if (notification.userId !== userId) {
-        log.warn('Unauthorized attempt to archive notification', { 
-          notificationId: notification.id, 
-          notificationUserId: notification.userId, 
-          requestingUserId: userId 
-        });
-        return NextResponse.json({ message: 'Access denied' }, { status: 403 });
-      }
-
-      // Archive the notification
-      const updatedNotification = await db.notification.update({
-        where: { id: body.notificationId },
-        data: { status: 'ARCHIVED' }
-      });
-
-      log.info('Notification archived', { notificationId: updatedNotification.id });
-      return NextResponse.json({ 
-        message: 'Notification archived',
-        notification: updatedNotification 
-      });
-    }
-    // Unsupported operation
-    else {
-      log.warn('Unsupported notification operation', { operation: body.operation });
-      return NextResponse.json({ message: 'Unsupported operation' }, { status: 400 });
-    }
-  } catch (error) {
-    log.error('Error updating notification', { error });
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    });
+    
+    log.info('Notifications updated successfully', { 
+      count: result.count,
+      status,
+      userId 
+    });
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Notificações atualizadas com sucesso',
+      count: result.count 
+    });
+  } catch (error: any) {
+    log.error('Error updating notifications', { error: error?.message || 'Unknown error' });
+    return createErrorResponse('Falha ao atualizar notificações', 500);
   }
 } 

@@ -1,0 +1,170 @@
+[2025-04-10T12:51:00.018Z] Iniciando teste de acesso administrativo
+[2025-04-10T12:51:01.625Z] Navegando para http://localhost:3000/login
+[2025-04-10T12:51:14.716Z] CONSOLE: INFO: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2025-04-10T12:51:14.809Z] CONSOLE: INFO: [2025-04-10T12:51:14.806Z] [INFO] [FRONTEND] Login page rendered 
+[2025-04-10T12:51:14.830Z] CONSOLE: INFO: [2025-04-10T12:51:14.808Z] [INFO] [FRONTEND] Login page rendered 
+[2025-04-10T12:51:15.229Z] CONSOLE: INFO: [2025-04-10T12:51:14.884Z] [INFO] [FRONTEND] Determining auth mode {
+  "pathname": "/login"
+}
+[2025-04-10T12:51:16.226Z] Aguardando campos de login...
+[2025-04-10T12:51:18.479Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:18.552Z] CONSOLE: LOG: [Fast Refresh] done in 39ms
+[2025-04-10T12:51:18.922Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:18.927Z] CONSOLE: LOG: [Fast Refresh] done in 60ms
+[2025-04-10T12:51:18.929Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:18.931Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:18.969Z] Preenchendo email: pedro-eli@hotmail.com
+[2025-04-10T12:51:19.290Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:19.422Z] CONSOLE: LOG: [Fast Refresh] done in 42ms
+[2025-04-10T12:51:19.427Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:19.487Z] CONSOLE: LOG: [Fast Refresh] done in 74ms
+[2025-04-10T12:51:19.489Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:19.585Z] CONSOLE: LOG: [Fast Refresh] done in 42ms
+[2025-04-10T12:51:19.589Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:19.594Z] CONSOLE: LOG: [Fast Refresh] done in 46ms
+[2025-04-10T12:51:19.614Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:19.756Z] Preenchendo senha
+[2025-04-10T12:51:19.856Z] CONSOLE: ERROR: Failed to load resource: the server responded with a status of 400 (Bad Request)
+[2025-04-10T12:51:19.859Z] CONSOLE: LOG: [Fast Refresh] done in 246ms
+[2025-04-10T12:51:19.887Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.346Z] CONSOLE: LOG: [Fast Refresh] done in 458ms
+[2025-04-10T12:51:20.363Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.407Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:20.423Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.669Z] CONSOLE: LOG: [Fast Refresh] done in 45ms
+[2025-04-10T12:51:20.671Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.673Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:20.676Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.679Z] CONSOLE: LOG: [Fast Refresh] done in 40ms
+[2025-04-10T12:51:20.682Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.685Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:20.688Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:20.807Z] CONSOLE: LOG: [Fast Refresh] done in 129ms
+[2025-04-10T12:51:20.946Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:21.006Z] CONSOLE: LOG: [Fast Refresh] done in 59ms
+[2025-04-10T12:51:24.660Z] Clicando no botão de login
+[2025-04-10T12:51:24.704Z] CONSOLE: DEBUG: [2025-04-10T12:51:24.691Z] [DEBUG] [FRONTEND] Submitting login form {
+  "email": "pedro-eli@hotmail.com"
+}
+[2025-04-10T12:51:24.920Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:26.527Z] CONSOLE: LOG: [Fast Refresh] done in 1779ms
+[2025-04-10T12:51:26.559Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:26.634Z] CONSOLE: LOG: [Fast Refresh] done in 74ms
+[2025-04-10T12:51:26.949Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:27.045Z] CONSOLE: LOG: [Fast Refresh] done in 96ms
+[2025-04-10T12:51:27.062Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:27.109Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:27.141Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:27.214Z] CONSOLE: LOG: [Fast Refresh] done in 74ms
+[2025-04-10T12:51:30.477Z] API RESPONSE: http://localhost:3000/api/auth/login - Status: 200
+[2025-04-10T12:51:30.479Z] CONSOLE: DEBUG: [2025-04-10T12:51:30.479Z] [DEBUG] [FRONTEND] Login response received {
+  "status": 200,
+  "requiresEmailVerification": false,
+  "requiresTwoFactor": false,
+  "hasToken": true
+}
+[2025-04-10T12:51:30.483Z] CONSOLE: INFO: [2025-04-10T12:51:30.480Z] [INFO] [FRONTEND] Login successful, token saved {
+  "email": "pedro-eli@hotmail.com"
+}
+[2025-04-10T12:51:30.486Z] CONSOLE: INFO: [2025-04-10T12:51:30.480Z] [INFO] [FRONTEND] User authenticated {
+  "userId": "cm98xeh8t0002f7p4tpwa5zfh",
+  "role": "SUPER_ADMIN"
+}
+[2025-04-10T12:51:30.515Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:31.797Z] CONSOLE: LOG: [Fast Refresh] done in 1281ms
+[2025-04-10T12:51:31.804Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:31.965Z] CONSOLE: LOG: [Fast Refresh] done in 161ms
+[2025-04-10T12:51:32.106Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:32.153Z] CONSOLE: LOG: [Fast Refresh] done in 47ms
+[2025-04-10T12:51:32.190Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:32.328Z] CONSOLE: LOG: Layout detectou userRole: SUPER_ADMIN string
+[2025-04-10T12:51:32.329Z] CONSOLE: LOG: Layout detectou userRole: SUPER_ADMIN string
+[2025-04-10T12:51:32.332Z] CONSOLE: LOG: Recebido userRole em getMenuSections: SUPER_ADMIN
+[2025-04-10T12:51:32.335Z] CONSOLE: LOG: Criando menus para SUPER_ADMIN
+[2025-04-10T12:51:32.366Z] CONSOLE: LOG: Sidebar rendering with role: SUPER_ADMIN
+[2025-04-10T12:51:32.368Z] CONSOLE: LOG: Recebido userRole em getMenuSections: SUPER_ADMIN
+[2025-04-10T12:51:32.371Z] CONSOLE: LOG: Criando menus para SUPER_ADMIN
+[2025-04-10T12:51:32.373Z] CONSOLE: LOG: Sidebar rendering with role: SUPER_ADMIN
+[2025-04-10T12:51:32.435Z] Login bem-sucedido!
+[2025-04-10T12:51:32.438Z] CONSOLE: LOG: [Fast Refresh] done in 243ms
+[2025-04-10T12:51:32.901Z] Testando acesso a Dashboard: http://localhost:3000/dashboard
+[2025-04-10T12:51:32.963Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:32.995Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:33.068Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:33.115Z] CONSOLE: LOG: [Fast Refresh] done in 47ms
+[2025-04-10T12:51:33.134Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:33.290Z] CONSOLE: LOG: [Fast Refresh] done in 154ms
+[2025-04-10T12:51:33.432Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:33.467Z] CONSOLE: LOG: [Fast Refresh] done in 34ms
+[2025-04-10T12:51:34.119Z] ERRO: Acesso a Dashboard falhou - Permissão negada
+[2025-04-10T12:51:34.147Z] Testando acesso a Distribuidoras: http://localhost:3000/distributors
+[2025-04-10T12:51:34.154Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:34.180Z] CONSOLE: LOG: [Fast Refresh] done in 45ms
+[2025-04-10T12:51:34.292Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:34.325Z] CONSOLE: LOG: [Fast Refresh] done in 33ms
+[2025-04-10T12:51:34.344Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:34.387Z] CONSOLE: LOG: [Fast Refresh] done in 43ms
+[2025-04-10T12:51:34.405Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:34.448Z] CONSOLE: LOG: [Fast Refresh] done in 44ms
+[2025-04-10T12:51:34.491Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:34.525Z] CONSOLE: LOG: [Fast Refresh] done in 34ms
+[2025-04-10T12:51:34.674Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:34.709Z] CONSOLE: LOG: [Fast Refresh] done in 35ms
+[2025-04-10T12:51:35.347Z] ERRO: Acesso a Distribuidoras falhou - Permissão negada
+[2025-04-10T12:51:35.357Z] Testando acesso a Instalações: http://localhost:3000/installations
+[2025-04-10T12:51:35.709Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:35.966Z] CONSOLE: LOG: [Fast Refresh] done in 43ms
+[2025-04-10T12:51:35.997Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:36.129Z] CONSOLE: LOG: [Fast Refresh] done in 133ms
+[2025-04-10T12:51:36.260Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:36.300Z] CONSOLE: LOG: [Fast Refresh] done in 40ms
+[2025-04-10T12:51:36.904Z] ERRO: Acesso a Instalações falhou - Permissão negada
+[2025-04-10T12:51:36.915Z] Testando acesso a Convites: http://localhost:3000/invitations
+[2025-04-10T12:51:36.919Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:36.968Z] CONSOLE: LOG: [Fast Refresh] done in 43ms
+[2025-04-10T12:51:36.984Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:37.021Z] CONSOLE: LOG: [Fast Refresh] done in 38ms
+[2025-04-10T12:51:37.038Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:37.084Z] CONSOLE: LOG: [Fast Refresh] done in 46ms
+[2025-04-10T12:51:37.103Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:37.125Z] CONSOLE: LOG: [Fast Refresh] done in 25ms
+[2025-04-10T12:51:37.244Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:37.280Z] CONSOLE: LOG: [Fast Refresh] done in 35ms
+[2025-04-10T12:51:37.881Z] ERRO: Acesso a Convites falhou - Permissão negada
+[2025-04-10T12:51:37.891Z] Testando acesso a Usuários: http://localhost:3000/users
+[2025-04-10T12:51:37.930Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:37.950Z] CONSOLE: LOG: [Fast Refresh] done in 37ms
+[2025-04-10T12:51:37.968Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:37.986Z] CONSOLE: LOG: [Fast Refresh] done in 19ms
+[2025-04-10T12:51:38.005Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:38.080Z] CONSOLE: LOG: [Fast Refresh] done in 76ms
+[2025-04-10T12:51:38.253Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:38.293Z] CONSOLE: LOG: [Fast Refresh] done in 40ms
+[2025-04-10T12:51:38.933Z] ERRO: Acesso a Usuários falhou - Permissão negada
+[2025-04-10T12:51:38.941Z] Testando API de distribuidoras
+[2025-04-10T12:51:38.962Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:38.987Z] CONSOLE: LOG: [Fast Refresh] done in 33ms
+[2025-04-10T12:51:39.006Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:39.503Z] CONSOLE: LOG: [Fast Refresh] done in 497ms
+[2025-04-10T12:51:39.521Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:39.534Z] CONSOLE: LOG: [Fast Refresh] done in 12ms
+[2025-04-10T12:51:40.196Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:40.237Z] CONSOLE: LOG: [Fast Refresh] done in 41ms
+[2025-04-10T12:51:40.259Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:40.277Z] CONSOLE: LOG: [Fast Refresh] done in 18ms
+[2025-04-10T12:51:40.297Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:51:40.332Z] CONSOLE: LOG: [Fast Refresh] done in 35ms
+[2025-04-10T12:51:41.182Z] Resposta da API de distribuidoras: 200
+[2025-04-10T12:51:41.183Z] Conteúdo: {"success":true,"distributors":[{"id":"cm9b9l18y0000f7vca9r374uo","name":"CEMIG Teste","kwhPrices":[{"id":"cm9b9l18z0002f7vcmvey7jjm","price":976,"distributorId":"cm9b9l18y0000f7vca9r374uo","startDate":"2025-04-10T11:17:56.995Z","endDate":null,"createdAt":"2025-04-10T11:17:57.009Z"}],"createdAt":"2025-04-10T11:17:57.009Z"}]}
+[2025-04-10T12:51:41.187Z] Teste concluído com sucesso!
+[2025-04-10T12:51:41.190Z] Navegador aberto para inspeção. Pressione Ctrl+C para finalizar.
+[2025-04-10T12:52:14.879Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:52:17.912Z] CONSOLE: LOG: [Fast Refresh] done in 3035ms
+[2025-04-10T12:52:17.951Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:52:18.041Z] CONSOLE: LOG: [Fast Refresh] done in 89ms
+[2025-04-10T12:52:18.060Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:52:18.105Z] CONSOLE: LOG: [Fast Refresh] done in 45ms
+[2025-04-10T12:52:18.123Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:52:18.166Z] CONSOLE: LOG: [Fast Refresh] done in 42ms
+[2025-04-10T12:52:18.374Z] CONSOLE: LOG: [Fast Refresh] rebuilding
+[2025-04-10T12:52:18.392Z] CONSOLE: LOG: [Fast Refresh] done in 19ms

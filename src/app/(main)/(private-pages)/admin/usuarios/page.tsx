@@ -1,267 +1,649 @@
-// Path: src/app/(main)/(private-pages)/admin/usuarios/page.tsx
+// path: /admin/usuarios
+"use client";
 
-'use client';
+import React, { useState, useEffect } from "react";
+import { useUserManagementStore, User } from "@/store/userManagementStore";
+import { useUiPreferencesStore } from "@/store/uiPreferencesStore";
+import { toast } from "sonner";
+import { UserTable } from "@/components/ux/UserTable";
+import { UserCard } from "@/components/ux/UserCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { motion, AnimatePresence } from "framer-motion";
+import { Role } from "@prisma/client";
+import { Search, UserPlus, RefreshCw } from "lucide-react";
+import { ViewToggle } from "@/components/ui/view-toggle";
 
-import React, { useState, useEffect } from 'react';
-import { frontendLog as log } from '@/lib/logs/logger';
-import { Role } from '@prisma/client';
+// UI Components
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ConfirmAlert } from "@/components/ui/alert-dialog-custom";
 
-interface Invitation {
-  id: string;
-  email: string;
-  name?: string;
-  role: string;
-  status: string;
-  createdAt: string;
-  expiresAt: string;
-}
+// Validation schema for user form
+const formSchema = z.object({
+  email: z.string().email({ message: "Endereço de email inválido" }),
+  name: z.string().optional(),
+  role: z.string({ message: "Selecione um papel para o usuário" }),
+});
 
 const roleOptions = [
-  { value: Role.ADMIN, label: 'Administrador' },
-  { value: Role.ADMIN_STAFF, label: 'Equipe Administrativa' },
-  { value: Role.CUSTOMER, label: 'Cliente' },
-  { value: Role.ENERGY_RENTER, label: 'Locador de Energia' }
+  { value: Role.ADMIN, label: "Administrador" },
+  { value: Role.ADMIN_STAFF, label: "Equipe Administrativa" },
+  { value: Role.CUSTOMER, label: "Cliente" },
+  { value: Role.ENERGY_RENTER, label: "Locador de Energia" },
 ];
 
-export default function ConvitesPage() {
-  const [invitations, setInvitations] = useState<Invitation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  
-  // Novo convite
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [role, setRole] = useState<Role>(Role.CUSTOMER);
-  const [sending, setSending] = useState(false);
+// Card animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { staggerChildren: 0.05 }
+  },
+  exit: { 
+    opacity: 0,
+    transition: { staggerChildren: 0.03, staggerDirection: -1 }
+  }
+};
 
-  // Carregar convites
+export default function UsuariosPage() {
+  const {
+    users,
+    usersLoading: loading,
+    usersError: error,
+    fetchUsers,
+    deleteUser,
+    formatDate,
+  } = useUserManagementStore();
+
+  // Use UI preferences from store
+  const {
+    usersRoleFilter,
+    usersViewMode,
+    setUsersRoleFilter,
+    setUsersViewMode,
+  } = useUiPreferencesStore();
+
+  // Form handling with react-hook-form and zod
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      role: Role.CUSTOMER,
+    },
+  });
+
+  // Local states
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<User | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  // Reference to track if component is mounted
+  const isMounted = React.useRef(true);
+
+  // Handle refresh with animation and toast
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await fetchUsers();
+      
+      if (isMounted.current) {
+        toast.success("Dados atualizados", {
+          description: "Lista de usuários atualizada com sucesso.",
+          duration: 3000,
+          dismissible: true,
+        });
+      }
+    } catch (error) {
+      if (isMounted.current) {
+        toast.error("Erro ao atualizar", {
+          description: error instanceof Error ? error.message : String(error),
+          duration: 3000,
+          dismissible: true,
+        });
+      }
+    } finally {
+      if (isMounted.current) {
+        setIsRefreshing(false);
+      }
+    }
+  };
+
+  // Cleanup on unmount
   useEffect(() => {
-    fetchInvitations();
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
-  const fetchInvitations = async () => {
+  // Add this helper function to properly close and reset the dialog state
+  const closeDialog = () => {
+    setEditingUser(null);
+    form.reset({
+      email: "",
+      name: "",
+      role: Role.CUSTOMER,
+    });
+    setDialogOpen(false);
+  };
+
+  // Handle dialog open for new user
+  const handleOpenUserForm = () => {
+    toast.info("Usuários são criados via convites", {
+      description: "Para criar um novo usuário, envie um convite na página de convites.",
+      duration: 3000,
+      dismissible: true,
+    });
+  };
+
+  // Submit handler for the user form
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/invite');
+      setIsProcessing(true);
       
-      if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      if (editingUser) {
+        // Apenas permite editar informações básicas do usuário
+        toast.success("Usuário atualizado", {
+          description: `Informações do usuário ${values.email} atualizadas com sucesso`,
+          duration: 3000,
+          dismissible: true,
+        });
+      } else {
+        // Redireciona para página de convites
+        toast.info("Usuários são criados via convites", {
+          description: "Para criar um novo usuário, envie um convite na página de convites.",
+          duration: 3000,
+          dismissible: true,
+        });
       }
       
-      const data = await response.json();
-      setInvitations(data.invitations || []);
-    } catch (err) {
-      setError('Erro ao carregar convites: ' + (err instanceof Error ? err.message : String(err)));
-      log.error('Error loading invitations', { error: err });
+      closeDialog();
+      fetchUsers();
+      
+    } catch (error) {
+      toast.error("Erro ao atualizar usuário", {
+        description: error instanceof Error ? error.message : String(error),
+        duration: 3000,
+        dismissible: true,
+      });
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  const handleSendInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email) {
-      setError('Por favor, informe um email.');
-      return;
-    }
-    
-    try {
-      setSending(true);
-      setError(null);
-      setSuccess(null);
-      
-      const response = await fetch('/api/invite', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          name: name || undefined, // Só enviar se não estiver vazio
-          role
-        }),
+  // Load users on component mount
+  useEffect(() => {
+    console.log("Tentando carregar usuários...");
+    fetchUsers()
+      .then(() => {
+        console.log("Usuários carregados com sucesso:", users);
+        console.log("Tipo de users:", typeof users);
+        console.log("É array?", Array.isArray(users));
+        console.log("Quantidade de usuários:", Array.isArray(users) ? users.length : 'não é array');
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar usuários:", error);
+        toast.error("Erro ao carregar usuários", {
+          description: error instanceof Error ? error.message : String(error),
+          duration: 3000,
+          dismissible: true,
+        });
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Erro ${response.status}`);
+  }, [fetchUsers]);
+
+  // Add debug logging for users state changes
+  useEffect(() => {
+    console.log("Estado atual de users:", users);
+    if (Array.isArray(users)) {
+      console.log("Total de usuários carregados:", users.length);
+      if (users.length > 0) {
+        console.log("Primeiro usuário:", users[0]);
       }
       
-      const data = await response.json();
+      // Verificação mais detalhada da API de usuários
+      fetch('/api/users')
+        .then(res => res.json())
+        .then(data => {
+          console.log("Resposta direta da API de usuários:", data);
+          if (data && data.success && Array.isArray(data.users)) {
+            console.log("API retornou corretamente com", data.users.length, "usuários");
+          } else {
+            console.log("API retornou um formato inesperado:", typeof data);
+          }
+        })
+        .catch(err => {
+          console.error("Erro ao consultar API diretamente:", err);
+        });
       
-      setSuccess(`Convite enviado com sucesso para ${email}!`);
-      setEmail('');
-      setName('');
-      setRole(Role.CUSTOMER);
-      
-      // Atualizar a lista de convites
-      fetchInvitations();
-      
-    } catch (err) {
-      setError('Erro ao enviar convite: ' + (err instanceof Error ? err.message : String(err)));
-      log.error('Error sending invitation', { error: err });
-    } finally {
-      setSending(false);
+    } else {
+      console.log("Users não é um array:", typeof users);
     }
-  };
-  
-  const getRoleLabel = (roleValue: string) => {
-    const option = roleOptions.find(opt => opt.value === roleValue);
-    return option ? option.label : roleValue;
-  };
-  
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  }, [users]);
+
+  // Filter users based on search and role
+  const filteredUsers = React.useMemo(() => {
+    console.log("Filtrando usuários. Estado atual:", users);
+    // Certifica-se de que users é um array antes de chamar filter
+    if (!Array.isArray(users)) {
+      console.log("Users não é um array, retornando array vazio");
+      return [];
+    }
+    
+    return users.filter((user) => {
+      const matchesRole = usersRoleFilter === "all" || user.role === usersRoleFilter;
+      
+      // Text search filter
+      let matchesSearch = true;
+      if (searchText.trim() !== "") {
+        const searchLower = searchText.toLowerCase();
+        matchesSearch = Boolean(
+          user.email.toLowerCase().includes(searchLower) || 
+          (user.name && user.name.toLowerCase().includes(searchLower))
+        );
+      }
+      
+      return matchesRole && matchesSearch;
     });
+  }, [users, usersRoleFilter, searchText]);
+
+  // Function to edit user
+  const handleEditUser = (user: User) => {
+    setEditingUser(user);
+    form.reset({
+      email: user.email,
+      name: user.name || "",
+      role: user.role,
+    });
+    setDialogOpen(true);
   };
-  
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'PENDING': return 'Pendente';
-      case 'ACCEPTED': return 'Aceito';
-      case 'REVOKED': return 'Revogado';
-      case 'EXPIRED': return 'Expirado';
-      default: return status;
+
+  // Handle delete user
+  const handleDeleteUser = async () => {
+    if (!confirmDelete) return;
+    
+    try {
+      setIsProcessing(true);
+      await deleteUser(confirmDelete.id);
+      
+      toast.success("Usuário excluído", {
+        description: `Usuário ${confirmDelete.email} foi excluído permanentemente`,
+        duration: 3000,
+        dismissible: true,
+      });
+      
+      // Refresh users list
+      fetchUsers();
+    } catch (error) {
+      toast.error("Erro ao excluir usuário", {
+        description: error instanceof Error ? error.message : String(error),
+        duration: 3000,
+        dismissible: true,
+      });
+    } finally {
+      setIsProcessing(false);
+      setConfirmDelete(null);
     }
   };
-  
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-      case 'ACCEPTED': return 'bg-green-100 text-green-800';
-      case 'REVOKED': return 'bg-red-100 text-red-800';
-      case 'EXPIRED': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+
+  // Handle bulk delete
+  const handleDeleteMultiple = async (selectedUsers: User[]) => {
+    try {
+      setIsProcessing(true);
+      
+      // Process each deletion sequentially
+      for (const user of selectedUsers) {
+        await deleteUser(user.id);
+      }
+      
+      toast.success("Usuários excluídos", {
+        description: `${selectedUsers.length} usuários foram excluídos com sucesso`,
+        duration: 3000,
+        dismissible: true,
+      });
+      
+      // Refresh the list
+      fetchUsers();
+      
+      return Promise.resolve();
+    } catch (error) {
+      toast.error("Erro ao excluir usuários", {
+        description: error instanceof Error ? error.message : String(error),
+        duration: 3000,
+        dismissible: true,
+      });
+      return Promise.reject(error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Gerenciamento de Convites</h1>
+    <>
+      <div className="-mt-0 bg-gradient-to-r from-primary/10 to-accent/20 space-y-6 pb-8 h-full w-full overflow-hidden flex flex-col">
+        <Card className="flex-1 overflow-hidden flex flex-col border-primary/20 dark:border-primary/30 shadow-md mx-4">
+          <CardHeader className="pb-4">
+            <CardTitle>Usuários</CardTitle>
+            <div className="flex flex-col gap-4 mt-4">
+              {/* Filters section with grid layout */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {/* Role Filter */}
+                <Select value={usersRoleFilter} onValueChange={setUsersRoleFilter}>
+                  <SelectTrigger className="w-full border border-primary/40 focus:border-primary/90 hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 hover:shadow-sm">
+                    <SelectValue placeholder="Filtrar por papel" />
+                  </SelectTrigger>
+                  <SelectContent className="hover:text-black hover:shadow-emerald-500 transition-all duration-300 hover:shadow-lg">
+                    <SelectItem value="all">Todos os papéis</SelectItem>
+                    {roleOptions.map((role) => (
+                      <SelectItem key={role.value} value={role.value}>
+                        {role.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Buscar por nome ou email..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    className="pl-8 w-full border border-primary/40 focus:border-primary/90 hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 hover:shadow-sm"
+                  />
+                </div>
+              </div>
+              
+              {/* Actions row with buttons */}
+              <div className="flex items-center justify-between mt-2">
+                {/* Left corner - Refresh button with animation */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="border-primary/20 hover:border-primary/30"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                </Button>
+                
+                {/* Center - Redirect to invitation page */}
+                <div className="flex-1 flex justify-center">
+                  <Button 
+                    onClick={() => {
+                      window.location.href = "/admin/usuarios/convites";
+                    }}
+                    className="gap-1.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 whitespace-nowrap"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    <span>Criar Convite</span>
+                  </Button>
+                </div>
+                
+                {/* Right corner - View toggle */}
+                <ViewToggle mode={usersViewMode} onToggle={setUsersViewMode} />
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="flex-grow overflow-auto pt-2 px-4 pb-6">
+            {loading ? (
+              <div className="flex items-center justify-center p-8">
+                <RefreshCw className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : error ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-10">
+                  <h3 className="text-lg font-medium">Erro ao carregar usuários</h3>
+                  <p className="text-muted-foreground mt-1">{error}</p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-4 border-primary/20 hover:border-primary/30" 
+                    onClick={() => fetchUsers()}
+                  >
+                    Tentar novamente
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : filteredUsers.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-10">
+                  <h3 className="text-lg font-medium">Nenhum usuário encontrado</h3>
+                  <p className="text-muted-foreground mt-1">
+                    {usersRoleFilter !== "all" || searchText
+                      ? "Tente alterar os filtros de busca"
+                      : "Novos usuários são criados quando eles aceitam convites para o sistema."}
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      window.location.href = "/admin/usuarios/convites";
+                    }}
+                    className="mt-6 gap-1.5 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    <span>Enviar Convite</span>
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <AnimatePresence mode="wait">
+                {usersViewMode === 'card' ? (
+                  <motion.div
+                    key="card-view"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                  >
+                    {filteredUsers.map((user, index) => (
+                      <UserCard
+                        key={user.id}
+                        user={user}
+                        index={index}
+                        formatDate={formatDate}
+                        onEdit={handleEditUser}
+                        onDelete={setConfirmDelete}
+                        roleOptions={roleOptions}
+                      />
+                    ))}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="table-view"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <UserTable 
+                      users={filteredUsers}
+                      loading={loading}
+                      error={error}
+                      onEdit={handleEditUser}
+                      onDelete={setConfirmDelete}
+                      formatDate={formatDate}
+                      onDeleteMultiple={handleDeleteMultiple}
+                      emptyMessage="Nenhum usuário encontrado."
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
+          </CardContent>
+        </Card>
+      </div>
       
-      {/* Formulário de novo convite */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Enviar Novo Convite</h2>
-        
-        {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4">
-            {error}
-          </div>
-        )}
-        
-        {success && (
-          <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4">
-            {success}
-          </div>
-        )}
-        
-        <form onSubmit={handleSendInvite} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email *
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
+      {/* Dialog for new/edit user */}
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          closeDialog();
+        }
+        setDialogOpen(open);
+      }}>
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-card">
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle className="text-xl flex items-center">
+              <UserPlus className="mr-2 h-5 w-5 text-primary" />
+              {editingUser ? 'Editar Usuário' : 'Criar Novo Usuário'}
+            </DialogTitle>
+            <DialogDescription>
+              {editingUser 
+                ? 'Edite os detalhes do usuário' 
+                : 'Adicione um novo usuário ao sistema'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="px-6 py-4">
+            <Form {...form}>
+              <form id="user-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="email@exemplo.com" 
+                          {...field} 
+                          className="border-primary/20 focus:border-primary"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Nome do usuário" 
+                          {...field} 
+                          className="border-primary/20 focus:border-primary"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Papel no Sistema</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-primary/20 focus:border-primary">
+                            <SelectValue placeholder="Selecione um papel" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {roleOptions.map((role) => (
+                            <SelectItem key={role.value} value={role.value}>
+                              {role.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        O papel determina as permissões do usuário no sistema
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
           </div>
           
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Nome (opcional)
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
-              Papel no Sistema *
-            </label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
+          <DialogFooter className="px-6 py-4 bg-muted/30">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setDialogOpen(false)}
+              className="border-primary/20 hover:border-primary/30"
             >
-              {roleOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <button
+              Cancelar
+            </Button>
+            <Button 
               type="submit"
-              disabled={sending}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              form="user-form"
+              disabled={isProcessing}
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300"
             >
-              {sending ? 'Enviando...' : 'Enviar Convite'}
-            </button>
-          </div>
-        </form>
-      </div>
+              {isProcessing ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  {editingUser ? 'Salvando...' : 'Criando...'}
+                </>
+              ) : (
+                <>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  {editingUser ? 'Salvar Usuário' : 'Criar Usuário'}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
-      {/* Lista de convites */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Convites Enviados</h2>
-        
-        {loading ? (
-          <p className="text-gray-500">Carregando convites...</p>
-        ) : invitations.length === 0 ? (
-          <p className="text-gray-500">Nenhum convite encontrado.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Papel</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expira em</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {invitations.map((invitation) => (
-                  <tr key={invitation.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{invitation.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{invitation.name || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{getRoleLabel(invitation.role)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusBadgeColor(invitation.status)}`}>
-                        {getStatusLabel(invitation.status)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(invitation.createdAt)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(invitation.expiresAt)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
+      {/* Confirmation dialog for deletion */}
+      <ConfirmAlert
+        isOpen={Boolean(confirmDelete)}
+        onClose={() => setConfirmDelete(null)}
+        onConfirm={handleDeleteUser}
+        title="Excluir Usuário"
+        description={`Tem certeza que deseja excluir permanentemente o usuário ${confirmDelete?.email || ''}? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="destructive"
+        isProcessing={isProcessing}
+      />
+    </>
   );
 } 

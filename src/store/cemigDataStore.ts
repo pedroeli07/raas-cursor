@@ -1,63 +1,96 @@
 import { create } from 'zustand';
 import { useAuthStore } from './authStore';
+import { createLogger } from '@/lib/utils/logger';
+import { InvoiceData } from '@/lib/models/energy-data';
+
+const logger = createLogger('CemigDataStore');
 
 // Interface para representar os dados processados do Excel da Cemig
-interface CemigEnergyData {
-  referenceDate: string;
+export interface CemigRecord {
   installationNumber: string;
-  installationType: 'CONSUMER' | 'GENERATOR';
-  generation?: number;
-  consumption?: number;
-  transfer?: number;
-  receipt?: number;
-  compensation?: number;
-  balance?: number;
-  expirationDate?: string;
-  distributorId: string;
-}
-
-interface CemigUploadStatus {
-  id: string;
-  fileName: string;
-  uploadDate: Date;
-  referenceMonth: string;
-  status: 'PROCESSING' | 'COMPLETE' | 'ERROR';
-  rowsProcessed?: number;
+  period: string;
+  consumption: number;
+  generation: number;
+  compensation: number;
+  transferred: number;
+  received: number;
+  previousBalance: number;
+  currentBalance: number;
+  expiringAmount: number;
+  expirationPeriod: string;
+  type: 'GENERATOR' | 'CONSUMER';
+  quota: number;
   errorMessage?: string;
 }
 
-interface CemigDataStore {
+export interface Invoice {
+  id: string;
+  description: string;
+  issueDate: string;
+  dueDate: string;
+  amount: number;
+  status: 'pending' | 'paid' | 'overdue';
+  customerName?: string;
+  installationNumber?: string;
+  referenceMonth?: string;
+}
+
+export interface CemigDataStore {
   // Estado
-  energyData: CemigEnergyData[];
-  filteredData: CemigEnergyData[];
-  uploadHistory: CemigUploadStatus[];
-  currentUpload: CemigUploadStatus | null;
+  uploadedData: CemigRecord[];
+  processedData: CemigRecord[];
   selectedMonth: string | null;
   selectedDistributor: string | null;
+  selectedInstallation: string | null;
   isLoading: boolean;
   error: string | null;
   
+  // Invoice data
+  invoices: Invoice[];
+  renterInvoices: Invoice[];
+  
+  // Energy data
+  cemigData: CemigRecord[];
+  
   // Ações
   uploadCemigData: (file: File, referenceMonth: string, distributorId: string) => Promise<void>;
-  fetchEnergyData: (filters?: { month?: string, distributorId?: string }) => Promise<void>;
-  fetchUploadHistory: () => Promise<void>;
-  getUploadStatus: (uploadId: string) => Promise<void>;
+  setProcessedData: (data: CemigRecord[]) => void;
   setSelectedMonth: (month: string | null) => void;
+  setSelectedInstallation: (installationId: string | null) => void;
   setSelectedDistributor: (distributorId: string | null) => void;
   clearError: () => void;
+  
+  // Actions
+  setInvoices: (invoices: Invoice[]) => void;
+  setRenterInvoices: (invoices: Invoice[]) => void;
+  setCemigData: (data: CemigRecord[]) => void;
+  
+  // Helper methods
+  addInvoice: (invoice: Invoice) => void;
+  updateInvoice: (id: string, data: Partial<Invoice>) => void;
+  removeInvoice: (id: string) => void;
+  
+  // Fetch methods
+  fetchInvoices: () => Promise<void>;
+  fetchRenterInvoices: () => Promise<void>;
+  fetchCemigData: () => Promise<void>;
 }
 
 export const useCemigDataStore = create<CemigDataStore>((set, get) => ({
   // Estado inicial
-  energyData: [],
-  filteredData: [],
-  uploadHistory: [],
-  currentUpload: null,
+  uploadedData: [],
+  processedData: [],
   selectedMonth: null,
   selectedDistributor: null,
+  selectedInstallation: null,
   isLoading: false,
   error: null,
-
+  
+  // Invoice data inicialmente vazia
+  invoices: [],
+  renterInvoices: [],
+  cemigData: [],
+  
   // Upload de arquivo Excel da Cemig
   uploadCemigData: async (file: File, referenceMonth: string, distributorId: string) => {
     const authState = useAuthStore.getState();
@@ -87,14 +120,14 @@ export const useCemigDataStore = create<CemigDataStore>((set, get) => ({
         throw new Error(errorData.message || 'Falha ao fazer upload do arquivo');
       }
 
-      const uploadStatus = await response.json();
+      const result = await response.json();
+      
       set({ 
-        currentUpload: uploadStatus,
         isLoading: false 
       });
       
-      // Atualizar histórico de uploads
-      get().fetchUploadHistory();
+      // Atualizar dados após upload bem-sucedido
+      get().fetchCemigData();
       
     } catch (error) {
       console.error('Upload error:', error);
@@ -105,183 +138,172 @@ export const useCemigDataStore = create<CemigDataStore>((set, get) => ({
     }
   },
 
-  // Buscar dados de energia com filtragem opcional
-  fetchEnergyData: async (filters = {}) => {
-    const authState = useAuthStore.getState();
-    if (!authState.token || !authState.isAuthenticated) {
-      set({ error: 'Usuário não autenticado' });
-      return;
-    }
-
-    try {
-      set({ isLoading: true, error: null });
-      
-      // Construir query params
-      const params = new URLSearchParams();
-      if (filters.month) params.append('month', filters.month);
-      if (filters.distributorId) params.append('distributorId', filters.distributorId);
-      
-      // Usar valores do estado se não fornecidos nos filtros
-      const currentMonth = get().selectedMonth;
-      if (!filters.month && currentMonth) {
-        params.append('month', currentMonth);
-      }
-      
-      const currentDistributor = get().selectedDistributor;
-      if (!filters.distributorId && currentDistributor) {
-        params.append('distributorId', currentDistributor);
-      }
-      
-      const queryString = params.toString();
-      const url = `/api/energy-data${queryString ? `?${queryString}` : ''}`;
-      
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${authState.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Falha ao carregar dados de energia');
-      }
-
-      const data = await response.json();
-      set({ 
-        energyData: data.energyData,
-        filteredData: data.energyData, // Inicialmente os mesmos dados
-        isLoading: false 
-      });
-      
-    } catch (error) {
-      console.error('Fetch energy data error:', error);
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar dados de energia',
-      });
-    }
-  },
-
-  // Buscar histórico de uploads
-  fetchUploadHistory: async () => {
-    const authState = useAuthStore.getState();
-    if (!authState.token || !authState.isAuthenticated) {
-      set({ error: 'Usuário não autenticado' });
-      return;
-    }
-
-    try {
-      set({ isLoading: true, error: null });
-      
-      const response = await fetch('/api/energy-data/uploads', {
-        headers: {
-          Authorization: `Bearer ${authState.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Falha ao carregar histórico de uploads');
-      }
-
-      const data = await response.json();
-      set({ 
-        uploadHistory: data.uploads,
-        isLoading: false 
-      });
-      
-    } catch (error) {
-      console.error('Fetch upload history error:', error);
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar histórico de uploads',
-      });
-    }
-  },
-
-  // Verificar status de um upload específico
-  getUploadStatus: async (uploadId: string) => {
-    const authState = useAuthStore.getState();
-    if (!authState.token || !authState.isAuthenticated) {
-      set({ error: 'Usuário não autenticado' });
-      return;
-    }
-
-    try {
-      set({ isLoading: true, error: null });
-      
-      const response = await fetch(`/api/energy-data/uploads/${uploadId}`, {
-        headers: {
-          Authorization: `Bearer ${authState.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Falha ao verificar status do upload');
-      }
-
-      const uploadStatus = await response.json();
-      set({ 
-        currentUpload: uploadStatus,
-        isLoading: false 
-      });
-      
-    } catch (error) {
-      console.error('Get upload status error:', error);
-      set({
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido ao verificar status do upload',
-      });
-    }
-  },
-
   // Definir mês selecionado para filtragem
   setSelectedMonth: (month: string | null) => {
     set({ selectedMonth: month });
-    
-    // Se tivermos dados e um mês selecionado, filtrar os dados
-    const { energyData, selectedDistributor } = get();
-    if (energyData.length > 0) {
-      let filtered = [...energyData];
-      
-      // Filtra por mês, se um mês for fornecido
-      if (month !== null) {
-        filtered = filtered.filter(item => item.referenceDate.includes(month));
-      }
-      
-      // Filtra por distribuidora, se uma distribuidora estiver selecionada
-      if (selectedDistributor !== null) {
-        filtered = filtered.filter(item => item.distributorId === selectedDistributor);
-      }
-      
-      set({ filteredData: filtered });
-    }
   },
 
   // Definir distribuidora selecionada para filtragem
   setSelectedDistributor: (distributorId: string | null) => {
     set({ selectedDistributor: distributorId });
-    
-    // Se tivermos dados e uma distribuidora selecionada, filtrar os dados
-    const { energyData, selectedMonth } = get();
-    if (energyData.length > 0) {
-      let filtered = [...energyData];
-      
-      // Filtra por distribuidora, se uma distribuidora for fornecida
-      if (distributorId !== null) {
-        filtered = filtered.filter(item => item.distributorId === distributorId);
-      }
-      
-      // Filtra por mês, se um mês estiver selecionado
-      if (selectedMonth !== null) {
-        filtered = filtered.filter(item => item.referenceDate.includes(selectedMonth));
-      }
-      
-      set({ filteredData: filtered });
-    }
   },
 
   // Limpar mensagem de erro
   clearError: () => set({ error: null }),
+  
+  // Actions
+  setInvoices: (invoices) => set({ invoices }),
+  setRenterInvoices: (renterInvoices) => set({ renterInvoices }),
+  setCemigData: (data) => set({ cemigData: data }),
+  
+  // Helper methods
+  addInvoice: (invoice) => set((state) => ({ 
+    invoices: [...state.invoices, invoice] 
+  })),
+  
+  updateInvoice: (id, data) => set((state) => ({
+    invoices: state.invoices.map((invoice) => 
+      invoice.id === id ? { ...invoice, ...data } : invoice
+    )
+  })),
+  
+  removeInvoice: (id) => set((state) => ({
+    invoices: state.invoices.filter((invoice) => invoice.id !== id)
+  })),
+
+  // Definir dados processados
+  setProcessedData: (data) => set({ processedData: data }),
+  
+  // Definir instalação selecionada
+  setSelectedInstallation: (installationId) => set({ selectedInstallation: installationId }),
+  
+  // Buscar faturas de clientes
+  fetchInvoices: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      
+      const response = await fetch('/api/invoices');
+      
+      if (!response.ok) {
+        throw new Error('Falha ao buscar faturas');
+      }
+      
+      const invoices = await response.json();
+      
+      // Transformar dados da API para o formato da store
+      const formattedInvoices: Invoice[] = invoices.map((inv: any) => ({
+        id: inv.id,
+        description: `Fatura de energia solar - ${inv.referenceMonth}`,
+        issueDate: new Date(inv.issueDate).toLocaleDateString('pt-BR'),
+        dueDate: new Date(inv.dueDate).toLocaleDateString('pt-BR'),
+        amount: inv.invoiceAmount || 0,
+        status: inv.status,
+        customerName: inv.customerName,
+        installationNumber: inv.installationNumber,
+        referenceMonth: inv.referenceMonth
+      }));
+      
+      set({ 
+        invoices: formattedInvoices,
+        isLoading: false 
+      });
+      
+      logger.info(`Carregadas ${formattedInvoices.length} faturas`);
+      
+    } catch (error) {
+      logger.error('Erro ao buscar faturas:', error);
+      set({
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar faturas',
+      });
+    }
+  },
+  
+  // Buscar faturas de locadores de energia (renter)
+  fetchRenterInvoices: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      
+      const response = await fetch('/api/invoices?type=renter');
+      
+      if (!response.ok) {
+        throw new Error('Falha ao buscar faturas de locadores');
+      }
+      
+      const invoices = await response.json();
+      
+      // Transformar dados da API para o formato da store
+      const formattedInvoices: Invoice[] = invoices.map((inv: any) => ({
+        id: inv.id,
+        description: `Fatura de aluguel de energia - ${inv.referenceMonth}`,
+        issueDate: new Date(inv.issueDate).toLocaleDateString('pt-BR'),
+        dueDate: new Date(inv.dueDate).toLocaleDateString('pt-BR'),
+        amount: inv.invoiceAmount || 0,
+        status: inv.status,
+        customerName: inv.customerName,
+        installationNumber: inv.installationNumber,
+        referenceMonth: inv.referenceMonth
+      }));
+      
+      set({ 
+        renterInvoices: formattedInvoices,
+        isLoading: false 
+      });
+      
+      logger.info(`Carregadas ${formattedInvoices.length} faturas de locadores`);
+      
+    } catch (error) {
+      logger.error('Erro ao buscar faturas de locadores:', error);
+      set({
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar faturas de locadores',
+      });
+    }
+  },
+  
+  // Buscar dados da CEMIG
+  fetchCemigData: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      
+      const response = await fetch('/api/energy-data');
+      
+      if (!response.ok) {
+        throw new Error('Falha ao buscar dados da CEMIG');
+      }
+      
+      const data = await response.json();
+      
+      // Transformar dados da API para o formato da store
+      const cemigRecords: CemigRecord[] = data.map((record: any) => ({
+        installationNumber: record.installationNumber,
+        period: record.period,
+        consumption: record.consumption || 0,
+        generation: record.generation || 0,
+        compensation: record.compensation || 0,
+        transferred: record.transferred || 0,
+        received: record.received || 0,
+        previousBalance: record.previousBalance || 0,
+        currentBalance: record.currentBalance || 0,
+        expiringAmount: record.expiringBalanceAmount || 0,
+        expirationPeriod: record.expiringBalancePeriod || "",
+        type: record.type || "CONSUMER",
+        quota: record.quota || 100
+      }));
+      
+      set({ 
+        cemigData: cemigRecords,
+        isLoading: false 
+      });
+      
+      logger.info(`Carregados ${cemigRecords.length} registros de dados da CEMIG`);
+      
+    } catch (error) {
+      logger.error('Erro ao buscar dados da CEMIG:', error);
+      set({
+        isLoading: false,
+        error: error instanceof Error ? error.message : 'Erro desconhecido ao buscar dados da CEMIG',
+      });
+    }
+  }
 }));

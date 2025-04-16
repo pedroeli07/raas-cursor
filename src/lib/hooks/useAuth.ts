@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import { frontendLog as log } from '@/lib/logs/logger';
 import appStorage from '@/lib/storage/appStorage';
+import { SESSION_MAX_AGE_SECONDS } from '../constants';
 
 // JWT token payload interface
 interface DecodedToken {
@@ -21,6 +22,8 @@ interface UserData {
   name?: string;
   // Other user properties
 }
+
+const maxAgeSeconds = SESSION_MAX_AGE_SECONDS; // 3 days in seconds
 
 /**
  * Authentication hook for handling auth state and operations
@@ -136,9 +139,10 @@ export default function useAuth() {
         // Armazenar token no localStorage
         appStorage.setAuthToken(data.token);
         
-        // Também armazenar em cookie para o middleware
+        // Também armazenar em cookie para o middleware (3 days)
         if (typeof document !== 'undefined') {
-          document.cookie = `auth_token=${data.token}; path=/; max-age=3600; SameSite=Strict`;
+         
+          document.cookie = `auth_token=${data.token}; path=/; max-age=${maxAgeSeconds}; SameSite=Strict`;
         }
         
         loadUserFromToken();

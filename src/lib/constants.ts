@@ -4,11 +4,11 @@ export const AUTH_COOKIE_NAME = 'auth_token';
 // Duração dos tokens (em segundos)
 export const TOKEN_EXPIRY = {
   // 7 dias
-  AUTH: 60 * 60 * 24 * 7,
+  auth: 7 * 24 * 60 * 60, // 7 days in seconds
   // 1 hora
-  PASSWORD_RESET: 60 * 60,
+  passwordReset: 60 * 60,
   // 15 minutos
-  VERIFICATION: 60 * 15,
+  verification: 60 * 15,
 };
 
 // Tipos de notificações
@@ -23,3 +23,7 @@ export const NOTIFICATION_STATUS = {
   READ: 'READ',
   ARCHIVED: 'ARCHIVED',
 }; 
+
+export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days in seconds
+export const PASSWORD_RESET_EXPIRY_SECONDS = 60 * 60; // 1 hour in seconds
+export const VERIFICATION_EXPIRY_SECONDS = 60 * 15; // 15 minutes in seconds

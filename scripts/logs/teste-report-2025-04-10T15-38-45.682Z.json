@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-04-10T15:38:45.682Z",
+  "duration": "42.68s",
+  "tests": {
+    "total": 5,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0
+  },
+  "created": {
+    "distributors": [],
+    "installations": [],
+    "users": [],
+    "convites": []
+  }
+}

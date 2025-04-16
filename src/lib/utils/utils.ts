@@ -1,19 +1,29 @@
 import { NextRequest } from 'next/server';
-import { Role } from '@prisma/client';
 import { RequestUser } from '../types/types';
 import { jwtVerify, JWTPayload } from 'jose';
 import log from '../logs/logger';
 import { verify } from 'jsonwebtoken';
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { $Enums } from '@prisma/client';
 
-/**
- * Combine multiple class names with Tailwind CSS support
- */
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+// Define the Role enum
+export enum Role {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  ADMIN_STAFF = 'ADMIN_STAFF',
+  CUSTOMER = 'CUSTOMER',
+  ENERGY_RENTER = 'ENERGY_RENTER',
+  USER = 'USER'
 }
 
+/**
+ * Merges multiple class names into a single string, handling conflicts appropriately.
+ * Uses clsx for conditional classes and tailwind-merge to resolve Tailwind CSS conflicts.
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+} 
 /**
  * Truncate text with ellipsis
  */
@@ -110,7 +120,7 @@ export function getUserFromRequest(req: NextRequest): RequestUser {
     return {
       userId: decoded.userId,
       userEmail: decoded.email,
-      userRole: decoded.role
+      userRole: decoded.role as $Enums.Role | null
     };
   } catch {
     log.warn('Invalid JWT token in request');
@@ -239,10 +249,21 @@ export function formatCurrencyPtBr(value: number): string {
  * Formats a value in kWh
  */
 export function formatEnergy(value: number): string {
-  return `${value.toLocaleString('pt-BR')} kWh`;
+  return `${value.toLocaleString('pt-BR', { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  })} kWh`;
 }
 
-
+/**
+ * Formats a value as a percentage
+ */
+export function formatPercentage(value: number, decimals: number = 2): string {
+  return `${value.toLocaleString('pt-BR', { 
+    minimumFractionDigits: decimals, 
+    maximumFractionDigits: decimals 
+  })}%`;
+}
 
 /**
  * Checks if a JWT token is expired
@@ -320,3 +341,113 @@ export function isAdminOrSuperAdmin(role: Role | null): boolean {
   return role === Role.ADMIN || role === Role.SUPER_ADMIN;
 }
   
+
+
+
+/**
+ * Obtém a duração de expiração do token de autenticação em segundos (client-side)
+ * @returns {Promise<number>} Duração em segundos
+ */
+export async function getTokenExpirySeconds(): Promise<number> {
+  try {
+    const response = await fetch('/api/settings?key=AUTH_TOKEN_EXPIRY_HOURS');
+    
+    if (!response.ok) {
+      console.error('Erro ao buscar duração do token:', response.statusText);
+      return 24 * 60 * 60; // 24 horas em segundos (padrão)
+    }
+    
+    const data = await response.json();
+    const expiryHours = parseInt(data.value, 10);
+    
+    if (isNaN(expiryHours) || expiryHours <= 0) {
+      console.error('Valor inválido para expiração do token:', data.value);
+      return 24 * 60 * 60; // 24 horas em segundos (padrão)
+    }
+    
+    return expiryHours * 60 * 60; // Converter horas para segundos
+  } catch (error) {
+    console.error('Erro ao buscar duração do token:', error);
+    return 24 * 60 * 60; // 24 horas em segundos (padrão)
+  }
+}
+
+/**
+ * Formata um valor monetário em Real brasileiro (BRL)
+ */
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
+}
+
+/**
+ * Formata uma data usando o formato Brasileiro
+ */
+export function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return '-';
+  
+  try {
+    // Handle string dates by converting to Date object
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    // Check if date is valid
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+      console.error('[formatDate] Invalid date value:', date);
+      return '-';
+    }
+    
+    return new Intl.DateTimeFormat("pt-BR").format(dateObj);
+  } catch (error) {
+    console.error('[formatDate] Error formatting date:', error, date);
+    return '-';
+  }
+}
+
+/**
+ * Formats file size in bytes to a human readable format
+ */
+export function formatBytes(bytes: number, decimals: number = 2): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+}
+
+// Helper to get user ID from request headers (set by middleware)
+export function getUserIdFromRequest(req: NextRequest): string | null {
+  return req.headers.get('x-user-id');
+}
+
+/**
+ * Create a web worker for heavy calculations
+ * @param workerCode - The code to be executed in the worker
+ * @returns Worker object or null if creation failed
+ */
+export const createWorker = (workerCode: string): Worker | null => {
+  if (typeof window === 'undefined' || !window.Worker) {
+    return null;
+  }
+  
+  try {
+    const blob = new Blob([workerCode], { type: 'application/javascript' });
+    const workerUrl = URL.createObjectURL(blob);
+    const worker = new Worker(workerUrl);
+    
+    // Ensure URL is revoked when worker is terminated
+    const originalTerminate = worker.terminate;
+    worker.terminate = function() {
+      URL.revokeObjectURL(workerUrl);
+      return originalTerminate.call(this);
+    };
+    
+    return worker;
+  } catch (error) {
+    console.error('Error creating worker:', error);
+    return null;
+  }
+}; 

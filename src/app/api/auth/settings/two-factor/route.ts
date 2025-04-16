@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
-import { toggleTwoFactorSchema } from '@/lib/schemas/schemas';
+import { toggleTwoFactorSchema } from '../../../../../lib/schemas/schemas';
 
 export async function PUT(req: NextRequest) {
   log.info('Received two-factor settings update request');
@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
     log.debug('Validated two-factor settings data', { userId, enabled });
 
     // Find user
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Update 2FA settings
-    await db.user.update({
+    await prisma.user.update({
       where: { id: userId },
       data: { isTwoFactorEnabled: enabled },
     });

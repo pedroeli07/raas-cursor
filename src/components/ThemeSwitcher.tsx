@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-
-export default function ThemeSwitcher() {
+import { cn } from '@/lib/utils';
+export default function ThemeSwitcher({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -19,7 +19,7 @@ export default function ThemeSwitcher() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="w-9 h-9 bg-card hover:bg-muted rounded-full flex items-center justify-center transition-colors"
+      className={cn("w-9 h-9 bg-card hover:bg-muted rounded-full flex items-center justify-center transition-colors", className)}
       aria-label="Alternar tema"
     >
       {theme === 'dark' ? (

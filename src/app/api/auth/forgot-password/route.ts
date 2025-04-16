@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { z } from 'zod';
 import crypto from 'crypto';
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     log.debug('Validated forgot password data', { email });
 
     // Find contact by email
-    const contact = await db.contact.findFirst({ 
+    const contact = await prisma.contact.findFirst({ 
       where: { emails: { has: email } },
       include: {
         users: true
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
     // Store token in database
-    await db.passwordReset.create({
+    await prisma.passwordReset.create({
       data: {
         token: resetToken,
         userId: user.id,

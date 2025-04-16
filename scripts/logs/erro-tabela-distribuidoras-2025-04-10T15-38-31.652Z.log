@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-04-10T15:38:31.652Z",
+  "context": "tabela-distribuidoras",
+  "message": "No element found for selector: button[aria-label=\"Alternar para visualização em tabela\"]",
+  "stack": "Error: No element found for selector: button[aria-label=\"Alternar para visualização em tabela\"]\n    at assert (file:///C:/raas-cursor/scripts/node_modules/puppeteer-core/lib/esm/puppeteer/util/assert.js:15:15)\n    at CdpFrame.click (file:///C:/raas-cursor/scripts/node_modules/puppeteer-core/lib/esm/puppeteer/api/Frame.js:752:17)\n    at async testTabelaDistribuidoras (file:///C:/raas-cursor/scripts/monitor-app.js:292:5)\n    at async testDistribuidoras (file:///C:/raas-cursor/scripts/monitor-app.js:182:5)\n    at async monitorApp (file:///C:/raas-cursor/scripts/monitor-app.js:565:5)"
+}

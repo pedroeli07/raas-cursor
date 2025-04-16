@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 
 export async function GET(req: NextRequest) {
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // Find token in database
-    const resetToken = await db.passwordReset.findFirst({
+    const resetToken = await prisma.passwordReset.findFirst({
       where: {
         token,
         expiresAt: { gt: new Date() }, // Token not expired

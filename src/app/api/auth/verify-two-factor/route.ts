@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { VerificationType } from '@prisma/client';
 import { validateVerificationCode } from '@/lib/utils/verification';
-import { twoFactorSchema } from '@/lib/schemas/schemas';
+import { twoFactorSchema } from '../../../../lib/schemas/schemas';
 
 export async function POST(req: NextRequest) {
   log.info('Received two-factor verification request');
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     log.debug('Validated two-factor data', { userId });
 
     // Find user
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { contact: true }
     });
@@ -49,14 +49,22 @@ export async function POST(req: NextRequest) {
       throw new Error('JWT secret is not configured.');
     }
 
+    // Check if the user has completed their profile
+    const isProfileCompleted = (user as any).profileCompleted || false;
+
     const tokenPayload = {
       userId: user.id,
-      email: user.contact.email,
+      email: user.contact.emails[0],
       role: user.role,
+      profileCompleted: isProfileCompleted
     };
 
-    const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: '1h' });
-    log.info('Two-factor verification successful, JWT generated', { userId, email: user.contact.email });
+    const token = jwt.sign(tokenPayload, jwtSecret, { expiresIn: '24h' });
+    log.info('Two-factor verification successful, JWT generated', { 
+      userId, 
+      email: user.contact.emails[0],
+      profileCompleted: isProfileCompleted
+    });
 
     return NextResponse.json({ 
       message: 'Autenticação bem-sucedida',

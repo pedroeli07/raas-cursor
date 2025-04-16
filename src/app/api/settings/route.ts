@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/db';
+import { prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { Role } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import { getPermissionLevel, hasPermission, PERMISSION_LEVELS } from './permissions';
+import pino from 'pino';
+import { 
+  getAllSettings, 
+  getSetting, 
+  updateSetting 
+} from '@/lib/services/settingsService';
+
+const loggerSettings = pino({
+  name: 'settings-api',
+  level: process.env.LOG_LEVEL || 'info',
+});
 
 // Interface para as configurações
 interface AppSetting {
@@ -94,6 +104,15 @@ const DEFAULT_SETTINGS = [
     description: 'Mensagem exibida durante manutenção',
     type: 'string',
     category: 'system'
+  },
+  
+  // Configurações de autenticação
+  { 
+    key: 'AUTH_TOKEN_EXPIRY_HOURS', 
+    value: '24',
+    description: 'Duração do token de autenticação em horas',
+    type: 'number',
+    category: 'auth'
   },
   
   // Configurações de Faturamento
@@ -194,87 +213,94 @@ const DEFAULT_SETTINGS = [
   },
 ];
 
-// GET - Listar configurações (filtrar por categoria)
+/**
+ * GET /api/settings - Obter todas as configurações
+ * GET /api/settings?key=KEY - Obter uma configuração específica
+ */
 export async function GET(req: NextRequest) {
-  log.info('Received request to fetch app settings');
-  
-  // Verificar autenticação
-  const authCheck = validateAuthentication(req);
-  if (!authCheck.isAuthenticated) {
-    return authCheck.errorResponse;
-  }
-
-  const { userId, userRole } = getUserFromRequest(req);
-  
   try {
-    const url = new URL(req.url);
-    const category = url.searchParams.get('category');
+    // Autenticar usuário
+    const user = await authenticate(req);
     
-    // Buscar configurações no banco de dados
-    const whereClause = category ? { category } : {};
-    
-    // Verificar se a tabela existe no schema do Prisma
-    // Nota: Pode ser necessário adicionar o modelo AppSettings ao schema.prisma
-    let settings = [];
-    
-    try {
-    
-      settings = await db.appSettings.findMany({
-        where: whereClause,
-        orderBy: [
-          { category: 'asc' },
-          { key: 'asc' }
-        ],
-      });
-    } catch (dbError) {
-      log.error('Error accessing appSettings model', { error: dbError });
-      return NextResponse.json({ 
-        error: 'O modelo AppSettings não está configurado no schema do Prisma' 
-      }, { status: 500 });
+    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
     
-    // Se não existem configurações, inicializar com valores padrão
-    if (settings.length === 0 && !category) {
-      log.info('Initializing default settings');
-      try {
+    // Verificar se o usuário tem permissão (apenas admin e super_admin)
+    if (!['super_admin', 'admin'].includes(user.role)) {
+      return NextResponse.json({ error: 'Permissão negada' }, { status: 403 });
+    }
+    
+    const url = new URL(req.url);
+    const key = url.searchParams.get('key');
+    
+    if (key) {
+      // Obter configuração específica
+      const setting = await getSetting(key as any);
       
-        await db.appSettings.createMany({
-          data: DEFAULT_SETTINGS,
-        });
-        
-        // Buscar novamente após criar
+      if (!setting) {
+        return NextResponse.json({ error: 'Configuração não encontrada' }, { status: 404 });
+      }
       
-        settings = await db.appSettings.findMany({
-          orderBy: [
-            { category: 'asc' },
-            { key: 'asc' }
-          ],
-        });
-      } catch (dbError) {
-        log.error('Error creating default settings', { error: dbError });
+      return NextResponse.json(setting);
+    } else {
+      // Obter todas as configurações
+      const settings = await getAllSettings();
+      return NextResponse.json(settings);
+    }
+  } catch (error) {
+    loggerSettings.error({ error }, 'Erro ao processar requisição GET /api/settings');
+    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
+  }
+}
+
+/**
+ * PUT /api/settings - Atualizar uma configuração
+ */
+export async function PUT(req: NextRequest) {
+  try {
+    // Autenticar usuário
+    const user = await authenticate(req);
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+    
+    // Verificar se o usuário tem permissão (apenas admin e super_admin)
+    if (!['super_admin', 'admin'].includes(user.role)) {
+      return NextResponse.json({ error: 'Permissão negada' }, { status: 403 });
+    }
+    
+    const body = await req.json();
+    
+    if (!body.key || body.value === undefined) {
+      return NextResponse.json({ error: 'Parâmetros inválidos' }, { status: 400 });
+    }
+    
+  const { key, value   } = body;
+    
+    // Validar configuração específica
+    if (key === 'AUTH_TOKEN_EXPIRY_HOURS') {
+      const hours = parseInt(value, 10);
+      if (isNaN(hours) || hours < 1 || hours > 720) { // Máximo 30 dias
         return NextResponse.json({ 
-          error: 'Não foi possível criar configurações padrão' 
-        }, { status: 500 });
+          error: 'Valor inválido. O tempo de expiração deve ser entre 1 e 720 horas.' 
+        }, { status: 400 });
       }
     }
-    // Filtrar configurações baseado na permissão do usuário
-    const filteredSettings = settings.filter((setting) => {
-      const permLevel = getPermissionLevel(setting.key);
-      return hasPermission(userRole as Role, permLevel);
-    });
-    log.info('Retrieved app settings successfully', { 
-      settingsCount: filteredSettings.length, 
-      category 
-    });
     
-    return NextResponse.json({ settings: filteredSettings });
+    // Atualizar configuração
+    const setting = await updateSetting(key, value.toString());
     
+    if (setting === null || setting === undefined) {
+      return NextResponse.json({ error: 'Erro ao atualizar configuração' }, { status: 500 });
+    }
+    
+    loggerSettings.info({ key, value }, 'Configuração atualizada com sucesso');
+    return NextResponse.json(setting);
   } catch (error) {
-    log.error('Error fetching app settings', { error });
-    return NextResponse.json(
-      { error: 'Erro ao buscar configurações' },
-      { status: 500 }
-    );
+    loggerSettings.error({ error }, 'Erro ao processar requisição PUT /api/settings');
+    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
   }
 }
 
@@ -316,7 +342,7 @@ export async function POST(req: NextRequest) {
     let existing = null;
     try {
       
-      existing = await db.appSettings.findUnique({
+      existing = await prisma.appSettings.findUnique({
         where: { key },
       });
     } catch (dbError) {
@@ -338,7 +364,7 @@ export async function POST(req: NextRequest) {
     let newSetting;
     try {
   
-      newSetting = await db.appSettings.create({
+      newSetting = await prisma.appSettings.create({
         data: {
           key,
           value,

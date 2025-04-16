@@ -1,0 +1,16 @@
+[2025-04-15T17:05:55.583Z] Starting RaaS API Testing - Server: http://localhost:3000
+
+[2025-04-15T17:05:55.600Z] [35mSTARTING TEST SUITE[0m
+
+[2025-04-15T17:05:55.601Z] Server URL: http://localhost:3000
+
+[2025-04-15T17:05:55.603Z] Checking if server is reachable...
+
+[2025-04-15T17:06:00.672Z] Server check timed out after 5 seconds
+
+[2025-04-15T17:06:00.678Z] [31mSERVER UNREACHABLE[0m - Cannot connect to http://localhost:3000
+
+[2025-04-15T17:06:00.682Z] Ensure the development server is running with: npm run dev
+
+[2025-04-15T17:06:00.689Z] Server check failed: socket hang up
+

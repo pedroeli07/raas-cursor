@@ -1,16 +1,35 @@
 // path: /admin/dashboard
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useUserManagementStore } from '@/store/userManagementStore';
+import { useDistributorStore } from '@/store/distributorStore';
+import { useInstallationStore } from '@/store/installationStore';
+import { Badge } from '@/components/ui/badge';
+import { cn, formatDate } from '@/lib/utils/utils';
+import { InstallationType, Installation } from '@prisma/client';
+import { frontendLog as log } from '@/lib/logs/logger';
+import { 
+  Users, 
+  Zap, 
+  CreditCard, 
+  Home, 
+  ChevronRight,
+  ArrowUpRight,
+  ArrowDownRight
+} from 'lucide-react';
+import { User, Distributor, UserRole } from '@/lib/types/app-types';
+
 
 // Componente Card
-const Card = ({ title, value, description, icon, color = 'primary' }: { 
+const Card = ({ title, value, description, icon, color = 'primary', trend = null }: { 
   title: string;
   value: string | number;
   description?: string;
   icon: React.ReactNode;
   color?: 'primary' | 'green' | 'orange' | 'purple' | 'pink';
+  trend?: 'up' | 'down' | null;
 }) => {
   const colorClasses = {
     primary: 'from-primary/10 to-primary-accent/5 text-primary-accent',
@@ -31,7 +50,19 @@ const Card = ({ title, value, description, icon, color = 'primary' }: {
         </div>
         <div className="space-y-1">
           <p className="text-2xl font-semibold text-foreground">{value}</p>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          {description && (
+            <p className="text-sm flex items-center">
+              {trend === 'up' && <ArrowUpRight className="mr-1 h-3 w-3 text-green-500" />}
+              {trend === 'down' && <ArrowDownRight className="mr-1 h-3 w-3 text-red-500" />}
+              <span className={cn(
+                "text-muted-foreground",
+                trend === 'up' && "text-green-600 dark:text-green-400",
+                trend === 'down' && "text-red-600 dark:text-red-400"
+              )}>
+                {description}
+              </span>
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -50,33 +81,38 @@ const ChartCard = ({ title, children }: { title: string; children: React.ReactNo
           <button 
             onClick={() => setIsOpen(!isOpen)}
             className="p-1 hover:bg-muted/30 rounded-full transition-colors"
+            aria-expanded={isOpen}
+            aria-label={isOpen ? "Recolher" : "Expandir"}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-muted-foreground">
-              {isOpen ? (
-                <path d="M10.75 6.75a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" />
-              ) : (
+            {isOpen ? (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-muted-foreground">
                 <path fillRule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clipRule="evenodd" />
-              )}
-            </svg>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 text-muted-foreground">
+                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
-      <div className={`p-5 transition-all duration-300 ease-in-out ${isOpen ? 'h-auto opacity-100' : 'h-0 opacity-0 overflow-hidden'}`}>
+      <div className={`p-5 transition-all duration-300 ease-in-out ${isOpen ? 'h-auto opacity-100 visible' : 'h-0 opacity-0 invisible overflow-hidden'}`}>
         {children}
       </div>
     </div>
   );
 };
 
-// Componente Table
-const Table = () => {
-  const data = [
-    { id: 1, distributor: 'CEMIG', totalUsers: 125, totalCredits: '14.532 kWh', status: 'Ativo' },
-    { id: 2, distributor: 'CPFL', totalUsers: 98, totalCredits: '10.245 kWh', status: 'Ativo' },
-    { id: 3, distributor: 'Enel', totalUsers: 73, totalCredits: '8.720 kWh', status: 'Pendente' },
-    { id: 4, distributor: 'Light', totalUsers: 45, totalCredits: '5.340 kWh', status: 'Ativo' },
-    { id: 5, distributor: 'EDP', totalUsers: 37, totalCredits: '4.125 kWh', status: 'Inativo' },
-  ];
+// Componente Table for distributors
+const DistributorsTable = ({ distributors }: { distributors: (Distributor & { installationCount?: number })[] }) => {
+  const formatCurrency = useCallback((value: number): string => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 5,
+    }).format(value);
+  }, []);
 
   return (
     <div className="overflow-x-auto">
@@ -84,190 +120,330 @@ const Table = () => {
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Distribuidora</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Total de Usuários</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Créditos Totais</th>
-            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Status</th>
+            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Instalações</th>
+            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Preço kWh</th>
             <th className="text-right py-3 px-4 text-sm font-medium text-muted-foreground">Ações</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
-            <tr key={row.id} className="border-b border-border hover:bg-muted/10">
-              <td className="py-3 px-4 text-sm">{row.distributor}</td>
-              <td className="py-3 px-4 text-sm">{row.totalUsers}</td>
-              <td className="py-3 px-4 text-sm">{row.totalCredits}</td>
-              <td className="py-3 px-4 text-sm">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                  ${row.status === 'Ativo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : ''}
-                  ${row.status === 'Pendente' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : ''}
-                  ${row.status === 'Inativo' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : ''}
-                `}>
-                  {row.status}
-                </span>
-              </td>
-              <td className="py-3 px-4 text-sm text-right">
-                <button className="text-primary-accent hover:text-primary-accent/80">
-                  Detalhes
-                </button>
+          {distributors?.length > 0 ? (
+            distributors.map((distributor) => (
+              <tr key={distributor.id} className="border-b border-border hover:bg-muted/10">
+                <td className="py-3 px-4 text-sm">{distributor.name}</td>
+                <td className="py-3 px-4 text-sm">{distributor.installationCount ?? 0}</td>
+                <td className="py-3 px-4 text-sm">
+                  {formatCurrency(distributor.pricePerKwh ?? 0)}
+                </td>
+                <td className="py-3 px-4 text-sm text-right">
+                  <Link href={`/admin/distribuidoras?id=${distributor.id}`} className="text-primary-accent hover:text-primary-accent/80">
+                    Detalhes
+                  </Link>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4} className="py-6 text-center text-muted-foreground">
+                Nenhuma distribuidora encontrada
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
   );
 };
 
+// Recent activity component
+const RecentActivity = ({ users, installations }: { users: User[], installations: Installation[] }) => {
+  // Get the 3 most recent users and installations
+  const recentUsers = useMemo(() => {
+    if (!Array.isArray(users)) return [];
+    return [...users]
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
+      .slice(0, 3);
+  }, [users]);
+
+  const recentInstallations = useMemo(() => {
+    if (!Array.isArray(installations)) return [];
+    return [...installations]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3);
+  }, [installations]);
+
+  // Use imported formatDate
+  const formatRelativeDate = useCallback((date: Date | string | undefined): string => {
+    if (!date) return 'Data desconhecida';
+    return formatDate(new Date(date));
+  }, []);
+
+  // Helper to get role label
+  const getRoleLabel = (role: UserRole) => {
+    switch (role) {
+      case UserRole.CUSTOMER: return 'cliente';
+      case UserRole.ENERGY_RENTER: return 'locador';
+      case UserRole.ADMIN: return 'admin';
+      case UserRole.SUPER_ADMIN: return 'super admin';
+      case UserRole.ADMIN_STAFF: return 'staff';
+      default: return 'usuário';
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {recentUsers.map(user => (
+        <div key={user.id} className="flex items-start gap-4">
+          <div className="mt-1 w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+            <Users className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-foreground">Novo usuário registrado</span>
+              <span className="text-xs text-muted-foreground">{formatRelativeDate(user.createdAt)}</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {user.name || user.email} foi registrado como {getRoleLabel(user.role)}.
+            </p>
+          </div>
+        </div>
+      ))}
+
+      {recentInstallations.map(installation => (
+        <div key={installation.id} className="flex items-start gap-4">
+          <div className="mt-1 w-9 h-9 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            {installation.type === InstallationType.GENERATOR ? (
+              <Zap className="w-5 h-5 text-green-600 dark:text-green-400" />
+            ) : (
+              <Home className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-foreground">
+                Nova instalação {installation.type === InstallationType.GENERATOR ? 'geradora' : 'consumidora'}
+              </span>
+              <span className="text-xs text-muted-foreground">{formatRelativeDate(installation.createdAt)}</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Instalação #{installation.installationNumber} foi registrada no sistema.
+            </p>
+          </div>
+        </div>
+      ))}
+
+      {recentUsers.length === 0 && recentInstallations.length === 0 && (
+        <div className="text-center py-6 text-muted-foreground">
+          Nenhuma atividade recente registrada
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Componente de página principal
 export default function AdminDashboardPage() {
+  const [timeRange, setTimeRange] = useState('month');
+  const [loading, setLoading] = useState(true);
+  // Import data from stores
+  const { users = [], fetchUsers } = useUserManagementStore();
+  const { distributors = [], fetchDistributors } = useDistributorStore();
+  const { installations = [], fetchInstallations } = useInstallationStore();
+
+  // Fetch all data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          fetchUsers(),
+          fetchDistributors(),
+          fetchInstallations()
+        ]);
+      } catch (error) {
+        log.error("Error loading dashboard data", { error });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [fetchUsers, fetchDistributors, fetchInstallations]);
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    // Ensure data is loaded and is an array before processing
+    const validUsers = Array.isArray(users) ? users : [];
+    const validInstallations = Array.isArray(installations) ? installations : [];
+    const validDistributors = Array.isArray(distributors) ? distributors : [];
+
+    // User statistics
+    const totalUsers = validUsers.length;
+    const customerCount = validUsers.filter(user => user.role === UserRole.CUSTOMER).length;
+    const renterCount = validUsers.filter(user => user.role === UserRole.ENERGY_RENTER).length;
+    
+    // Installation statistics
+    const totalInstallations = validInstallations.length;
+    const generatorCount = validInstallations.filter(
+      installation => installation.type === InstallationType.GENERATOR
+    ).length;
+    const consumerCount = validInstallations.filter(
+      installation => installation.type === InstallationType.CONSUMER
+    ).length;
+
+    // Distributor statistics with installation counts
+    const distributorsWithCounts = validDistributors.map(distributor => ({
+      ...distributor,
+      installationCount: validInstallations.filter(installation => 
+        installation.distributorId === distributor.id
+      ).length
+    }));
+
+    // Estimate energy generation (just an example computation)
+    // In a real app, this would come from actual energy data
+    const estimatedEnergyGeneration = generatorCount * 500; // kWh per installation
+    
+    // Estimate revenue (example)
+    const avgPricePerKwh = validDistributors.length > 0 
+      ? validDistributors.reduce((sum, d) => sum + (d.pricePerKwh ?? 0), 0) / validDistributors.length
+      : 0.85; // default if no distributors
+    const estimatedRevenue = estimatedEnergyGeneration * avgPricePerKwh * 0.9; // 90% of the total value
+
+    return {
+      totalUsers,
+      customerCount,
+      renterCount,
+      totalInstallations,
+      generatorCount,
+      consumerCount,
+      distributorsWithCounts,
+      estimatedEnergyGeneration,
+      estimatedRevenue
+    };
+  }, [users, installations, distributors]);
+
+  const isLoadingData = loading;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex items-center gap-2">
-          <select className="py-2 px-3 rounded-lg border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+          <select 
+            className="py-2 px-3 rounded-lg border border-border bg-card focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+          >
             <option value="month">Último mês</option>
             <option value="quarter">Último trimestre</option>
             <option value="year">Último ano</option>
             <option value="all">Todo período</option>
           </select>
-          <button className="py-2 px-4 bg-primary hover:bg-primary-accent text-white rounded-lg transition-colors">
+          <button className="py-2 px-4 bg-muted hover:bg-muted/80 text-white rounded-lg transition-colors">
             Exportar
           </button>
         </div>
       </div>
 
-      {/* Cards de estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card 
-          title="Total de Usuários" 
-          value="378"
-          description="↑ 12% em relação ao mês anterior" 
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
-            </svg>
-          }
-        />
-        <Card 
-          title="Energia Gerada" 
-          value="45.832 kWh"
-          description="↑ 8% em relação ao mês anterior"
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-              <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clipRule="evenodd" />
-            </svg>
-          }
-          color="green"
-        />
-        <Card 
-          title="Faturamento" 
-          value="R$ 182.459,00"
-          description="↑ 15% em relação ao mês anterior"
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-              <path fillRule="evenodd" d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z" clipRule="evenodd" />
-              <path d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z" />
-            </svg>
-          }
-          color="purple"
-        />
-        <Card 
-          title="Novas Instalações" 
-          value="28"
-          description="↑ 5% em relação ao mês anterior"
-          icon={
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
-              <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
-            </svg>
-          }
-          color="orange"
-        />
-      </div>
-
-      {/* Gráficos e Tabelas */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Geração de Energia (kWh)">
-          <div className="h-[300px] flex items-center justify-center bg-muted/20 rounded-lg">
-            <div className="text-center">
-              <p className="text-muted-foreground mb-2">Gráfico de Geração de Energia</p>
-              <p className="text-sm text-muted-foreground/70">
-                (Em um ambiente real, este seria um componente de gráfico)
-              </p>
-            </div>
+      {/* Loading indicator */}
+      {isLoadingData && (
+        <div className="rounded-lg border border-dashed border-border p-8 text-center">
+          <div className="animate-pulse flex flex-col items-center space-y-3">
+              <div className="w-12 h-12 bg-muted rounded-full"></div>
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-3 bg-muted rounded w-1/2"></div>
           </div>
-        </ChartCard>
-
-        <ChartCard title="Distribuição de Créditos">
-          <div className="h-[300px] flex items-center justify-center bg-muted/20 rounded-lg">
-            <div className="text-center">
-              <p className="text-muted-foreground mb-2">Gráfico de Distribuição de Créditos</p>
-              <p className="text-sm text-muted-foreground/70">
-                (Em um ambiente real, este seria um gráfico de pizza/donut)
-              </p>
-            </div>
-          </div>
-        </ChartCard>
-      </div>
-
-      {/* Tabela de Distribuidoras */}
-      <ChartCard title="Distribuidoras">
-        <Table />
-      </ChartCard>
-
-      {/* Atividades Recentes */}
-      <ChartCard title="Atividades Recentes">
-        <div className="space-y-4">
-          <div className="flex items-start gap-4">
-            <div className="mt-1 w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-primary">
-                <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Novo cliente registrado</span>
-                <span className="text-xs text-muted-foreground">Há 2 horas</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-0.5">Maria Silva foi registrada como cliente com 2 instalações.</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="mt-1 w-9 h-9 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-green-600 dark:text-green-400">
-                <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Instalação ativada</span>
-                <span className="text-xs text-muted-foreground">Há 5 horas</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-0.5">Instalação #12458 foi ativada e começou a gerar energia.</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4">
-            <div className="mt-1 w-9 h-9 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-purple-600 dark:text-purple-400">
-                <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-                <path fillRule="evenodd" d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z" clipRule="evenodd" />
-                <path d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z" />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-foreground">Pagamento recebido</span>
-                <span className="text-xs text-muted-foreground">Há 1 dia</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-0.5">Pagamento de R$ 3.540,00 foi recebido de João Oliveira.</p>
-            </div>
-          </div>
+          <p className="mt-4 text-sm text-muted-foreground">Carregando dados do dashboard...</p>
         </div>
-      </ChartCard>
+      )}
+
+      {!isLoadingData && (
+        <>
+          {/* Cards de estatísticas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card 
+              title="Total de Usuários" 
+              value={stats.totalUsers}
+              description={`${stats.customerCount} clientes, ${stats.renterCount} locadores`} 
+              icon={<Users className="h-6 w-6" />}
+            />
+            <Card 
+              title="Energia Gerada (Estimada)" 
+              value={`${stats.estimatedEnergyGeneration.toLocaleString('pt-BR')} kWh`}
+              description="Baseado nas instalações ativas"
+              icon={<Zap className="h-6 w-6" />}
+              color="green"
+            />
+            <Card 
+              title="Faturamento (Estimado)" 
+              value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.estimatedRevenue)}
+              description="Baseado na geração estimada"
+              icon={<CreditCard className="h-6 w-6" />}
+              color="purple"
+            />
+            <Card 
+              title="Instalações" 
+              value={stats.totalInstallations}
+              description={`${stats.generatorCount} geradoras, ${stats.consumerCount} consumidoras`}
+              icon={<Home className="h-6 w-6" />}
+              color="orange"
+            />
+          </div>
+
+          {/* Gráficos e Tabelas */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ChartCard title="Geração de Energia por Mês (kWh)">
+              <div className="h-[300px] flex items-center justify-center bg-muted/20 rounded-lg">
+                <div className="text-center">
+                  <p className="text-muted-foreground mb-2">Gráfico de Geração de Energia</p>
+                  <p className="text-sm text-muted-foreground/70">
+                    (Em um ambiente real, este seria um componente de gráfico conectado aos dados reais de geração)
+                  </p>
+                </div>
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Distribuição de Instalações">
+              <div className="h-[300px] flex items-center justify-center bg-muted/20 rounded-lg">
+                <div className="text-center">
+                  <p className="text-muted-foreground mb-2">
+                    {stats.generatorCount} Geradoras | {stats.consumerCount} Consumidoras
+                  </p>
+                  <p className="text-sm text-muted-foreground/70">
+                    (Em um ambiente real, este seria um gráfico de pizza/donut com dados atualizados)
+                  </p>
+                </div>
+              </div>
+            </ChartCard>
+          </div>
+
+          {/* Tabela de Distribuidoras */}
+          <ChartCard title="Distribuidoras">
+            <DistributorsTable distributors={stats.distributorsWithCounts} />
+            <div className="mt-4 text-right">
+              <Link 
+                href="/admin/distribuidoras" 
+                className="inline-flex items-center text-sm text-primary-accent hover:text-primary/80"
+              >
+                Ver todas as distribuidoras
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
+          </ChartCard>
+
+          {/* Atividades Recentes */}
+          <ChartCard title="Atividades Recentes">
+            <RecentActivity users={users as User[]} installations={installations as Installation[]} />
+            <div className="mt-4 text-right">
+              <Link 
+                href="/admin/atividades" 
+                className="inline-flex items-center text-sm text-primary-accent hover:text-primary/80"
+              >
+                Ver todas as atividades
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Link>
+            </div>
+          </ChartCard>
+        </>
+      )}
     </div>
   );
 } 

@@ -1,0 +1,10 @@
+[INFO] [2025-04-10T12:19:29.997Z] Starting RaaS Simulator Tests
+[DEBUG] [2025-04-10T12:19:30.003Z] Launching browser
+[DEBUG] [2025-04-10T12:19:31.569Z] Setting simulated page content
+[INFO] [2025-04-10T12:19:32.395Z] Screenshot saved: simulated_page_loaded-1744287571621.png
+[INFO] [2025-04-10T12:19:32.396Z] Testing login functionality
+[INFO] [2025-04-10T12:19:32.681Z] Screenshot saved: before_login_submit-1744287572572.png
+[INFO] [2025-04-10T12:19:32.744Z] Login successful - dashboard is visible
+[INFO] [2025-04-10T12:19:32.823Z] Screenshot saved: login_success-1744287572745.png
+[INFO] [2025-04-10T12:19:32.825Z] Testing distributor operations
+[INFO] [2025-04-10T12:19:32.846Z] Found 2 distributors in the list

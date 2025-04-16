@@ -180,7 +180,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
 
     try {
       set({ isLoading: true, error: null });
-      const response = await fetch('/api/invitations', {
+      const response = await fetch('/api/invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

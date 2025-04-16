@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db } from '@/lib/db/db';
+import { db, prisma } from '@/lib/db/db';
 import log from '@/lib/logs/logger';
 import { Role } from '@prisma/client';
 import { NotificationService } from '@/lib/notification/notificationService';
+import { EmailService } from '@/lib/email/emailService';
+import { createHelpResponseSchema } from '@/lib/schemas/schemas';
+import { validateRequestBody, validateAuthentication, createErrorResponse } from '@/lib/validators/validators';
+import { getUserFromRequest } from '@/lib/utils/utils';
 
 // Schema for adding a response to a help request
 const addResponseSchema = z.object({
@@ -11,123 +15,155 @@ const addResponseSchema = z.object({
   message: z.string().min(5, { message: 'Response must be at least 5 characters long' }),
 });
 
-// Helper function to get user information from request headers set by middleware
-function getUserFromRequest(req: NextRequest) {
-  const userId = req.headers.get('x-user-id');
-  const userEmail = req.headers.get('x-user-email');
-  const userRole = req.headers.get('x-user-role') as Role | null;
-
-  return { userId, userEmail, userRole };
-}
 
 // POST - Add a response to a help request
 export async function POST(req: NextRequest) {
   log.info('Received request to add response to help request');
 
-  const { userId, userRole } = getUserFromRequest(req);
-
-  if (!userId) {
-    log.warn('Unauthorized attempt to add response', { message: 'No user ID in request' });
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  // Check authentication
+  const authCheck = validateAuthentication(req);
+  if (!authCheck.isAuthenticated) {
+    return authCheck.errorResponse;
   }
 
-  try {
-    const body = await req.json();
-    const validation = addResponseSchema.safeParse(body);
+  const { userId, userEmail } = getUserFromRequest(req);
+  
+  // Devido ao check de autenticação, sabemos que userId não é null aqui
+  const userIdSafe = userId as string;
 
+  try {
+    // Validate request data
+    const validation = await validateRequestBody(
+      req, 
+      createHelpResponseSchema,
+      'Help response validation'
+    );
+    
     if (!validation.success) {
-      log.warn('Response validation failed', { errors: validation.error.errors });
-      return NextResponse.json({ errors: validation.error.errors }, { status: 400 });
+      return validation.error;
     }
 
     const { helpRequestId, message } = validation.data;
-
-    // Check if the help request exists
-    const helpRequest = await db.helpRequest.findUnique({
+    
+    // Get the help request to verify access and update status
+    const helpRequest = await prisma.helpRequest.findUnique({
       where: { id: helpRequestId },
-      include: { user: true }
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            contact: {
+              select: {
+                emails: true
+              }
+            }
+          }
+        },
+        admin: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
     });
 
     if (!helpRequest) {
       log.warn('Attempt to respond to non-existent help request', { helpRequestId });
-      return NextResponse.json({ message: 'Help request not found' }, { status: 404 });
+      return createErrorResponse('Help request not found', 404);
     }
 
-    // Check if the user has permission to respond
-    const isAdmin = userRole === Role.SUPER_ADMIN || userRole === Role.ADMIN;
-    const isOwner = helpRequest.userId === userId;
-
-    if (!(isAdmin || isOwner)) {
-      log.warn('Unauthorized attempt to respond to help request', { 
-        userId, 
-        helpRequestId,
-        userRole 
-      });
-      return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
-    }
-
-    // Add the response
-    const response = await db.helpResponse.create({
+    // Create the response
+    const helpResponse = await prisma.helpResponse.create({
       data: {
         helpRequestId,
-        userId,
-        message
+        userId: userIdSafe,
+        message,
       }
     });
 
-    log.info('Response added successfully', { responseId: response.id, helpRequestId });
+    log.info('Response added to help request', { 
+      helpResponseId: helpResponse.id,
+      helpRequestId
+    });
 
-    // If not already in progress, update the status when an admin responds
-    if (isAdmin && helpRequest.status === 'OPEN') {
-      await db.helpRequest.update({
+    // Update the help request status if it's the first response from an admin
+    // and the current status is OPEN
+    const user = await prisma.user.findUnique({
+      where: { id: userIdSafe },
+      select: { role: true, name: true }
+    });
+
+    const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN_STAFF';
+    const isCustomer = helpRequest.userId === userIdSafe;
+
+    // If an admin responds to an OPEN request, update to IN_PROGRESS
+    if (isAdmin && !isCustomer && helpRequest.status === 'OPEN') {
+      await prisma.helpRequest.update({
         where: { id: helpRequestId },
         data: { 
           status: 'IN_PROGRESS',
-          adminId: userId
+          adminId: userIdSafe 
         }
       });
-      
+
       log.info('Help request status updated to IN_PROGRESS', { helpRequestId });
     }
 
-    // Create a notification for the other party
-    const notifyUserId = isAdmin ? helpRequest.userId : helpRequest.adminId;
+    // Send notifications
     
-    if (notifyUserId) {
-      // Get user info for the notification
-      const responderInfo = await db.user.findUnique({
-        where: { id: userId },
-        select: { 
-          name: true,
-          role: true
-        }
+    // If admin responded, notify the customer
+    if (isAdmin && !isCustomer) {
+      // Create notification for customer
+      await NotificationService.createNotification({
+        userId: helpRequest.userId,
+        title: 'Nova resposta no seu pedido de suporte',
+        message: `${user?.name} respondeu à sua solicitação: "${helpRequest.title}"`,
+        type: 'HELP',
+        relatedId: helpRequestId
       });
 
-      const title = 'Nova Resposta em Solicitação de Ajuda';
-      const notificationMessage = `${responderInfo?.name || 'Alguém'} (${responderInfo?.role || 'Usuário'}) respondeu à sua solicitação "${helpRequest.title}".`;
-      
-      await NotificationService.createNotification(
-        notifyUserId,
-        title,
-        notificationMessage,
-        'HELP',
-        helpRequestId
-      );
-      
-      log.info('Notification sent about new response', { 
-        notifyUserId,
-        helpRequestId
-      });
+      // If customer has email, send email notification
+      if (helpRequest.user.contact?.emails?.[0]) {
+        await EmailService.sendHelpRequestNotification(
+          helpRequest.user.contact.emails[0],
+          helpRequest.title,
+          message,
+          user?.name || 'Suporte'
+        );
+      }
+    }
+    
+    // If customer responded, notify assigned admin or all admins
+    if (isCustomer) {
+      if (helpRequest.adminId) {
+        // Notify the assigned admin
+        await NotificationService.createNotification({
+          userId: helpRequest.adminId,
+          title: 'Nova resposta em solicitação de suporte',
+          message: `${helpRequest.user.name} respondeu em "${helpRequest.title}"`,
+          type: 'HELP',
+          relatedId: helpRequestId
+        });
+      } else {
+        // Notify all admins if no admin is assigned
+        await NotificationService.notifyAdminsAboutHelpResponse(
+          helpRequestId,
+          helpRequest.user.name || 'Cliente',
+          helpRequest.title
+        );
+      }
     }
 
     return NextResponse.json({ 
       message: 'Response added successfully',
-      response 
+      helpResponse 
     }, { status: 201 });
 
   } catch (error) {
-    log.error('Error adding response', { error });
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    log.error('Error adding response to help request', { error });
+    return createErrorResponse('Internal Server Error', 500);
   }
 }
 
@@ -153,7 +189,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // Check if the help request exists
-    const helpRequest = await db.helpRequest.findUnique({
+    const helpRequest = await prisma.helpRequest.findUnique({
       where: { id: helpRequestId }
     });
 
@@ -176,7 +212,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get the responses
-    const responses = await db.helpResponse.findMany({
+    const responses = await prisma.helpResponse.findMany({
       where: { helpRequestId },
       orderBy: { createdAt: 'asc' },
       include: {

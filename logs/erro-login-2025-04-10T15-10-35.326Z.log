@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-04-10T15:10:35.333Z",
+  "context": "login",
+  "message": "net::ERR_CONNECTION_REFUSED at http://localhost:3000/login",
+  "stack": "Error: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\n    at navigate (file:///C:/raas-cursor/scripts/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Frame.js:180:27)\n    at async Deferred.race (file:///C:/raas-cursor/scripts/node_modules/puppeteer-core/lib/esm/puppeteer/util/Deferred.js:33:20)\n    at async CdpFrame.goto (file:///C:/raas-cursor/scripts/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Frame.js:146:25)\n    at async CdpPage.goto (file:///C:/raas-cursor/scripts/node_modules/puppeteer-core/lib/esm/puppeteer/api/Page.js:570:20)\n    at async login (file:///C:/raas-cursor/scripts/monitor-app.js:111:5)\n    at async monitorApp (file:///C:/raas-cursor/scripts/monitor-app.js:526:22)"
+}

@@ -62,7 +62,7 @@ Responsividade: Mobile-first com breakpoints adequados
 Idioma: Português do Brasil (pt-BR)
 Integração Backend/Frontend
 O backend já tem endpoints para:
-Autenticação (login/registro)
+Autenticação (login/register)
 Convites
 Distribuidoras
 Novos endpoints serão criados para:

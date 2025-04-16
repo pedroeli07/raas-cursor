@@ -1,0 +1,44 @@
+[
+  {
+    "tagName": "HTML",
+    "className": "light",
+    "id": "",
+    "text": "[data-sonner-toaster][dir=ltr],html[dir=ltr]{--toast-icon-margin-start:-3px;--toast-icon-margin-end:"
+  },
+  {
+    "tagName": "BODY",
+    "className": "__variable_3a0388 __variable_c1e5c9 font-sans antialiased",
+    "id": "",
+    "text": "((e, i, s, u, m, a, l, h)=>{\n    let d = document.documentElement, w = [\n        \"light\",\n        \"d"
+  },
+  {
+    "tagName": "SCRIPT",
+    "className": "",
+    "id": "",
+    "text": "self.__next_f.push([1,\"hunks/app-pages-internals.js\\\"],\\\"AsyncMetadataOutlet\\\"]\\n20:I[\\\"(app-pages-b"
+  },
+  {
+    "tagName": "SCRIPT",
+    "className": "",
+    "id": "",
+    "text": "self.__next_f.push([1,\"fined\\\",\\\"template\\\":[\\\"$\\\",\\\"$L6\\\",null,{},null,[],1],\\\"templateStyles\\\":\\\"$"
+  },
+  {
+    "tagName": "SCRIPT",
+    "className": "",
+    "id": "",
+    "text": "self.__next_f.push([1,\"23:{\\\"name\\\":\\\"NonIndex\\\",\\\"env\\\":\\\"Server\\\",\\\"key\\\":null,\\\"owner\\\":null,\\\"st"
+  },
+  {
+    "tagName": "SCRIPT",
+    "className": "",
+    "id": "",
+    "text": "self.__next_f.push([1,\"0:{\\\"P\\\":\\\"$1\\\",\\\"b\\\":\\\"development\\\",\\\"p\\\":\\\"\\\",\\\"c\\\":[\\\"\\\",\\\"admin\\\",\\\"dist"
+  },
+  {
+    "tagName": "SCRIPT",
+    "className": "",
+    "id": "",
+    "text": "self.__next_f.push([1,\"2d:{\\\"metadata\\\":[[\\\"$\\\",\\\"title\\\",\\\"0\\\",{\\\"children\\\":\\\"RaaS Solar - Energia"
+  }
+]

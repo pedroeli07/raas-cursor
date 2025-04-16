@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { prisma } from '@/lib/db/db';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { Role } from '@prisma/client';
 
 // Importar funções de permissão do endpoint principal de configurações
 import { getPermissionLevel, hasPermission } from '../permissions';
+import { authOptions } from '@/lib/auth-options';
 
 // GET - Buscar configuração específica
 export async function GET(
@@ -26,7 +26,7 @@ export async function GET(
     const id = params.id;
     
     // Buscar configuração no banco de dados
-    const setting = await db.appSettings.findUnique({
+    const setting = await prisma.appSettings.findUnique({
       where: { id },
     });
     
@@ -87,7 +87,7 @@ export async function PUT(
     }
     
     // Buscar configuração existente
-    const existingSetting = await db.appSettings.findUnique({
+    const existingSetting = await prisma.appSettings.findUnique({
       where: { id },
     });
     
@@ -110,7 +110,7 @@ export async function PUT(
     }
     
     // Atualizar configuração
-    const updatedSetting = await db.appSettings.update({
+    const updatedSetting = await prisma.appSettings.update({
       where: { id },
       data: {
         value: String(value), // Converter para string já que todos os valores são armazenados como string
@@ -156,7 +156,7 @@ export async function DELETE(
     const id = params.id;
     
     // Verificar se a configuração existe
-    const setting = await db.appSettings.findUnique({
+    const setting = await prisma.appSettings.findUnique({
       where: { id },
     });
     
@@ -183,7 +183,7 @@ export async function DELETE(
     }
     
     // Excluir configuração
-    await db.appSettings.delete({
+    await prisma.appSettings.delete({
       where: { id },
     });
     
